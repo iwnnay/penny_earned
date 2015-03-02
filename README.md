@@ -22,13 +22,13 @@ way that people spend their money: on a monthly basis.</p>
 
 <ul>
 <li><b>Beautification:</b> I know the app looks like ass. I'm working on that.</li>
-<li><b>Budgets:</b> I see these being goals, or limitations within an account. These should help one stay on track (eg. Food Budget, Entertainments Budget). They're rely on the categories to check amounts</li>
+<li><b>Budgets:</b> I see these being goals, or limitations within an account. These should help one stay on track (eg. Food Budget, Entertainments Budget). Relies on the categories to check amounts</li>
 <li><b>Profile Pages:</b> It's one thing to be able to log in and out, but one should be able to manage how they're seen by the app.</li>
 <li><b>Credit Cards:</b> Like that Uncle that won't forgive you for that time you did something stupid to his property or children, we all have them. It'd be nice to manage those Uncles with the app, but I'll settle for credit cards.</li>
 <li><b>Loans:</b> If you've been to school or bought a house in your life time you probably have these. Soon you could track them.</li>
-<li><b>libofx<b> Automatic tracking of transaction from a bank account. This would be really nice to have. I see myself adding this sooner rather than later.</li>
-<li><b>QA:</b>No project would be complete without it. I see bugs everyonce in a while while I'm using it. I plan on creating tickets for myself. If you find yourself using the app don't hesitate to create an issue</li>
-<li><b>JavaScript Test Coverage</b> This will be sooner than later. I don't like letting code hang out untested, but here I am doing it.</li>
+<li><b>libofx:</b> Automatic tracking of transaction from a bank account. This would be really nice to have. I see myself adding this sooner rather than later.</li>
+<li><b>QA:</b> No project would be complete without it. I see bugs everyonce in a while while I'm using it. I plan on creating tickets for myself. If you find yourself using the app don't hesitate to create an issue</li>
+<li><b>JavaScript Test Coverage:</b> This will be sooner than later. I don't like letting code hang out untested, but here I am doing it.</li>
 </ul>
 
 <h3>License</h3>
