@@ -21,8 +21,8 @@ way that people spend their money: on a monthly basis.</p>
 <h3>Roadmap</h3>
 
 <ul>
-<li><b>Beautification:</b> I know the app looks like ass. I'm working on that.<li>
-<li><b>Budgets:</b> I see these being goals, or limitations within an account. These should help one stay on track (eg. Food Budget, Entertainments Budget). They're rely on the categories to check amounts<li>
+<li><b>Beautification:</b> I know the app looks like ass. I'm working on that.</li>
+<li><b>Budgets:</b> I see these being goals, or limitations within an account. These should help one stay on track (eg. Food Budget, Entertainments Budget). They're rely on the categories to check amounts</li>
 <li><b>Profile Pages:</b> It's one thing to be able to log in and out, but one should be able to manage how they're seen by the app.</li>
 <li><b>Credit Cards:</b> Like that Uncle that won't forgive you for that time you did something stupid to his property or children, we all have them. It'd be nice to manage those Uncles with the app, but I'll settle for credit cards.</li>
 <li><b>Loans:</b> If you've been to school or bought a house in your life time you probably have these. Soon you could track them.</li>
