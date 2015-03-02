@@ -1,0 +1,4 @@
+--no-doc
+--abc-max 15
+--abc-exclude Views::Users::Show#process_profile_attributes
+--style-exclude spec/**/*

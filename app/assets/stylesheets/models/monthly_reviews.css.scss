@@ -1,0 +1,67 @@
+@import 'variables';
+
+.title-bar {
+  background: $title-background;
+  h1 {
+    display: inline-block;
+    margin: 0;
+    padding: 5px;
+  }
+}
+
+.main-date {
+    color: $font-color;
+    font-weight: bold;
+    margin-left: 20px;
+    position: relative;
+    text-decoration: none;
+    top: -4px;
+
+    &:hover {
+      background: transparent;
+      color: $primary-color;
+    }
+}
+
+ul.date-selector {
+  display: none;
+  background: white;
+  box-shadow: 1px 2px 10px 1px #ddd;
+  list-style: none;
+  overflow: hidden;
+  width: 50%;
+  position: absolute;
+
+  &.visible {
+      display: block;
+  }
+
+  li.archive {
+    a {
+      color: #c3c3c3;
+    }
+  }
+
+  li {
+    float: left;
+    margin: 10px 0;
+    min-width: 119px;
+    text-align: center;
+    width: 25%;
+
+    a {
+      color: $font-color;
+      font-size: 1em;
+      text-decoration: none;
+      width: 100%;
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      &.selected {
+        color: $primary-color;
+      }
+    }
+  }
+}

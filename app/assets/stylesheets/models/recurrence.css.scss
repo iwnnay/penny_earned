@@ -1,0 +1,11 @@
+@import 'variables';
+#recurrence-link {
+    background: $quaternary-color;
+    box-shadow: inset -1px -1px 2px 1px rgba(0,0,0,.3);
+    color: #c6994b;
+
+    &.enabled {
+        box-shadow: inset 1px 1px 3px 1px rgba(0,0,0,.3);
+        color: $primary-button-hover-font-color;
+    }
+}

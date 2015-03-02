@@ -1,0 +1,39 @@
+@import 'variables';
+
+.row.max span{
+    color: $secondary-color;
+}
+
+.row.min {
+    span {
+        color: #tirtiary-color;
+
+        &.error {
+            color: $error-color;
+        }
+    }
+
+}
+
+div.title-area {
+    overflow: auto;
+    clear: both;
+
+    .review-shortcuts {
+        float: left;
+
+        a {
+          margin: 0 10px;
+        }
+
+        .previous {
+            -ms-transform: rotate(180deg); /* IE 9 */
+            -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+            transform: rotate(180deg);
+        }
+    }
+
+    .transaction-actions {
+        float: right;
+    }
+}

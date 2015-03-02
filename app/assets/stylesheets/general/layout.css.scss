@@ -1,0 +1,51 @@
+@import '../variables';
+h3, h1, h4 {
+  padding: 0px;
+  margin: 0px;
+}
+
+div.row {
+    width: 100%;
+    overflow: auto;
+}
+
+ul {
+    padding: 0px;
+}
+
+a {
+    text-decoration: none;
+
+    color: $primary-color;
+    &:hover {
+        color: $secondary-color;
+    }
+
+    &:active {
+        color: $tirtiary-color;
+    }
+}
+
+body {
+  background: $body-background;
+  font-family: sans-serif;
+}
+
+
+.primary-color { color: $primary-color }
+.secondary-color { color: $secondary-color }
+.tirtiary-color { color: $tirtiary-color }
+.quaternary-color { color: $quaternary-color }
+.quinary-color { color: $quinary-color }
+.senary-color { color: $senary-color }
+
+.error { color: $error-color; }
+.credit { color: $secondary-color; }
+.under { color: $tirtiary-color; }
+
+.primary-background { background: $primary-color }
+.secondary-background { background: $secondary-color }
+.tirtiary-background { background: $tirtiary-color }
+.quaternary-background { background: $quaternary-color }
+.quinary-background { background: $quinary-color }
+.senary-background { background: $senary-color }

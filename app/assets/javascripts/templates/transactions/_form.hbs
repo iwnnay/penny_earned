@@ -1,0 +1,45 @@
+<form class="transaction-form">
+<input type="hidden" name="state" value="{{state}}" />
+<div class="row">
+    <div class="date cell">
+        <label for="date">Date:</label>
+        <input name="date" type="text" value="{{date}}"/>
+    </div>
+    <div class="description cell">
+        <label for="description">Description:</label>
+        <input name="description" type="text" value="{{description}}"/>
+    </div>
+    <div class="amount cell">
+        <label for="amount">Amount:</label>
+        $<input name="amount" type="text" value="{{amount}}"/>
+    </div>
+    <div class="debit cell">
+        <label for="debit">Debit:</label>
+        <input name="debit" type="checkbox" value="{{debit}}" {{#if debit}}checked="checked"{{/if}}/>
+    </div>
+    <div class="state cell">
+        <label for="state">Status:</label>
+        <div
+            class="button icon fa fa-usd staged{{enabled state 'staged'}}{{enabled state 'placeholder'}}"
+            data-value="staged"
+            title="Estimated"
+        >
+        </div>
+        <div
+            class="button icon fa fa-usd paid{{enabled state 'paid'}}" data-value="paid" title="Paid"></div>
+        <div class="button icon fa fa-envelope pending{{enabled state 'pending'}}" data-value="pending" title="Sent"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="categories cell">
+        <label for="categories">Categories:</label>
+        <div id="categories-tag-area"></div>
+    </div>
+    <div class="recurrence cell">
+    </div>
+</div>
+<div class="row">
+    <a href="#" class="submit button primary">Submit</a>
+    <a href="#" class="cancel button secondary">Cancel</a>
+</div>
+</form>

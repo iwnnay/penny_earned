@@ -1,0 +1,9 @@
+<%= link_to "#{@time.strftime('%B %Y')} <span class='fa fa-play-circle'></span>".html_safe , '#', data: {review: "#{@time.month}/#{@time.year}"}, class: "main-date" %>
+<ul class="date-selector">
+    <li class="archive"><%= link_to 'Archive', account_monthly_reviews_path(@account) %></li>
+<% @account.monthly_reviews.each do |review| %>
+    <% if review.is_in_future? %>
+    <li><%= link_to review.date.strftime('%B %Y'), account_review_path(@account, review.month, review.year), data: {review: "#{review.month}/#{review.year}"}, class: @time == review.date ? "selected" : '' %></li>
+    <% end %>
+<% end %>
+</ul>

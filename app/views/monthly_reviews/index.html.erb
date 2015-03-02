@@ -1,0 +1,8 @@
+<div class="title-bar">
+    <h1>Archived Reviews for <%= @account.name  %></h1>
+</div>
+<ul>
+<% @account.monthly_reviews.order(date: :asc).each do |review| %>
+    <li><%= link_to review.date.strftime('%B, %Y'), account_review_path(@account, review.month, review.year) %></li>
+<% end %>
+</ul>

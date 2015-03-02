@@ -1,0 +1,317 @@
+class bank.Transaction
+    @STATES: <%= Transaction::STATES.to_s %>
+    constructor: (@id = false) ->
+        @data = {categories: []}
+        @waiting = false
+
+    showForm: ->
+        @waiting = true
+
+
+        if @id
+            bank.Ajax.get(@transactionPath(), {
+                success: (@data) =>
+                    @waiting = false
+                    @data.date = bank.Format.dateFront(@data.date) if @data.date
+                    @displayForm('edit')
+            })
+        else
+            bank.Ajax.post(@transactionsPath(), {
+                data:
+                    transaction:
+                        date: bank.Format.dateBack()
+                success: (@data) =>
+                    @cleanDataForFrontEnd()
+                    @waiting = false
+                    @displayForm('new')
+            })
+
+    cleanDataForFrontEnd: ->
+        @data.date = bank.Format.dateFront(@data.date) if @data.date
+        if @data.state == bank.Transaction.STATES[0]
+            @data.state = bank.Transaction.STATES[1]
+
+    displayForm: (type) ->
+        @messenger = bank.Messenger.show(
+            "transactions/#{type}",
+            @getData(),
+            {clickOff: false}
+        )
+
+        @attachEvents()
+        @addTagSupport()
+        @addRecurrence()
+        @visible = true
+
+    hideForm: ->
+        return true unless @visible
+
+        if @waiting
+            setTimeout( =>
+                @hideForm()
+            , 500)
+        else
+            @messenger.hide()
+
+        @visible = false
+
+    attachEvents: ->
+        $('input[name="date"]').datepicker(
+            minDate: bank.Account.startDate()
+            maxDate: bank.Account.maxDate()
+        ).blur ->
+            value = new Date($(this).val())
+            unless bank.Account.startDate < value and value < bank.Account.maxDate()
+                if value > new Date(bank.Account.maxDate())
+                    $(this).val(bank.Account.maxDate())
+                else if value < new Date(bank.Account.startDate())
+                    $(this).val(bank.Account.startDate())
+
+
+        $('.transaction-form .submit.button').click =>
+            update = (yesRecurrence = false) =>
+                @update({
+                    data: @getFormData(yesRecurrence)
+                    success: (@data) =>
+                        @waiting = false
+                        @messenger.hide()
+                        bank.Transaction.refreshIndex()
+                    error: (response) =>
+                        console.alert response
+                        #TODO add errors
+                })
+
+            @waiting = true
+            if @data.recurrence_id
+                bank.Messenger.confirm(
+                    message: "Do you want to make changes to all future instances in this recurring series?"
+                    positiveText: 'Yes'
+                    negativeText: 'No, just this one.'
+                    callback: (yesRecurrence) ->
+                        update(yesRecurrence)
+                )
+            else
+                update()
+
+            false
+
+        $('.transaction-form .cancel.button').click =>
+            @hideForm()
+            @delete() if @getData().state == 'placeholder'
+
+            false
+
+        $('.transaction-form .state.cell .button').click ->
+            $(this).siblings().removeClass('enabled')
+            $(this).addClass('enabled')
+
+            $('.transaction-form input[name="state"]')
+                .val($(this).data('value'))
+
+    addTagSupport: ->
+        getTags = =>
+            for tag in @data.categories
+                tag.name
+
+        tags = new Taggle('categories-tag-area', {
+            tags: getTags() || []
+            duplicateTagClass: 'taggle-duplicate'
+            hiddenInputName: 'categories'
+            placeholder: 'Enter categories'
+        })
+
+        container = tags.getContainer()
+        input = tags.getInput()
+
+        $(input).autocomplete({
+            source: bank.accountCategories
+            appendTo: container
+            width: '300px'
+            position:
+                at: "left bottom"
+                of: container
+            select: (e, data) ->
+                e.preventDefault()
+                tags.add(data.item.value) if e.which == 1
+        })
+
+    addRecurrence: ->
+        @recurrence = bank.Recurrence.create(@data.recurrence)
+
+    update: (options = {}) ->
+        new Error('No data to update') unless options.data
+
+        bank.Ajax.patch(@transactionPath(), options)
+
+    getData: ->
+        {
+            date: @data.date || bank.Format.dateFront()
+            description: @data.description || ''
+            amount: @data.amount || 0.00
+            categories: @data.categories || []
+            debit: (if @data.debit == false then false else true)
+            state: @data.state || bank.Transaction.STATES[0]
+        }
+
+    getFormData: (yesRecurrence)->
+        form = $('.transaction-form')
+        formData = {id: @data.id}
+        categories = []
+
+        form.find('input[type="text"], input[type="hidden"]').each ->
+            unless $(this).attr('name') == 'categories'
+                formData[$(this).attr('name')] = $(this).val()
+
+        form.find('input[name="categories"]').each ->
+            categories.push $(this).val()
+
+        formData.debit = form.find('input[name="debit"]').is(':checked')
+
+        formData.date = d3.time.format('%d/%m/%Y')(new Date(formData.date))
+
+        affectSeries = yesRecurrence
+        affectSeries = true if !@data.recurrence_id && @recurrence.values().timeframe
+
+        {
+            transaction: formData
+            categories: categories
+            recurrence: @recurrence.values()
+            affectSeries: affectSeries
+        }
+
+    delete: ->
+        del = (forwardTransactions = false) =>
+            bank.Ajax.delete @transactionPath(), {
+                data: {forward_transactions: forwardTransactions}
+                success: =>
+                    bank.Transaction.refreshIndex()
+            }
+
+        if @hasRecurrence()
+            message = "This transaction is part of a recurring series." +
+                " Would you like to delete all unpaid transactions in the series?"
+
+            bank.Messenger.confirm(
+                message: message
+                positiveText: 'Yes'
+                negativeText: 'No, just this one.'
+                callback: (forwardTransactions) ->
+                    del(forwardTransactions)
+            )
+        else
+            del()
+
+    hasRecurrence: () ->
+      if arguments.length
+        @recurring = arguments[0]
+      else
+        @recurring
+
+    transactionPath: ->
+        Routes.account_transaction_path(accountId, @id || @data.id)
+
+    transactionsPath: ->
+        Routes.account_transactions_path(accountId)
+
+    @refreshIndex: ->
+        $('.transactions-wrapper').addClass('waiting')
+        bank.Ajax.get(Routes.account_transactions_path(accountId), {
+            dataType: 'html'
+            success: (data) ->
+                $('.transactions-wrapper').html(data)
+                $('.transactions-wrapper').removeClass('waiting')
+            data:
+                month: bank.Account.time.month
+                year: bank.Account.time.year
+        })
+        bank.Account.refreshTotals()
+
+    @updateState: (id, state, options = {}) ->
+        transaction = new bank.Transaction(id)
+        options.data = {
+            transaction:
+                state: state
+            preserve_categories: true
+        }
+
+        transaction.update(options)
+
+        transaction
+
+
+#general click events
+$ ->
+    current_transaction = null
+    clickDelay = {}
+
+    showTransaction = (id = false) ->
+        current_transaction.hideForm() if current_transaction
+        current_transaction = new bank.Transaction(id)
+        current_transaction.showForm()
+
+    $('body').on 'click', '.new-transaction', ->
+        showTransaction() unless $('form.transaction-form').length
+
+        false
+
+    $('body').on 'click', '.button.edit-transaction', ->
+        unless $('form.transaction-form').length
+            showTransaction($(this).data('id'))
+
+        false
+
+    $('body').on 'click', '.button.delete-transaction', ->
+        return false if $('form.transaction-form').length
+        current_transaction.hideForm() if current_transaction
+
+        current_transaction = new bank.Transaction($(this).data('id'))
+        current_transaction.hasRecurrence($(this).parents('tr').data('recurring'))
+
+        bank.Messenger.confirm({
+            message: "Would you like to delete this transaction"
+            callback: (goAhead) ->
+                current_transaction.delete() if goAhead
+        })
+
+        false
+
+
+    $('body').on 'click', '.button.edit-transaction-state', ->
+        count = 1
+        btn = $(this)
+        id = btn.data('id')
+        originalState = btn.data('state')
+
+        for state,i in bank.Transaction.STATES
+            if btn.hasClass(state)
+                count = i
+                btn.removeClass(state)
+
+        count = 1 if ++count == bank.Transaction.STATES.length
+
+        btn.addClass((state = bank.Transaction.STATES[count]))
+
+        clearTimeout clickDelay[id]
+        if state != btn.data('state')
+            clickDelay[id] = setTimeout ->
+                bank.Transaction.updateState id, state, {
+                    success: ->
+                        btn.removeClass('waiting')
+                        btn.data('state', state)
+
+                        delete clickDelay[id]
+                        if Object.keys(clickDelay).length == 0
+                            bank.Transaction.refreshIndex()
+
+                    error: (data)->
+                        btn.addClass('error')
+                        btn.attr('title', bank.Error.standardMessage)
+                }
+            , 1000
+        else
+            delete clickDelay[id]
+
+        false
+
+Handlebars.registerHelper 'enabled', (button, state) ->
+    if button == state then ' enabled' else ''

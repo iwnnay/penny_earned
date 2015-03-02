@@ -1,0 +1,15 @@
+.messenger-wrapper {
+    box-shadow: 5px 5px 10px 1px #aaa;
+    background: white;
+}
+
+.messenger-shroud {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    background: black;
+    opacity: .5;
+    top: 0px;
+    left: 0px;
+}

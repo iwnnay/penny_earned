@@ -1,0 +1,145 @@
+@import 'variables';
+
+div.transactions-wrapper {
+    table.transactions {
+        width: 96%;
+        margin-left: 2%;
+
+        td {
+            border: none;
+            text-indent: 10px;
+            white-space: nowrap;
+
+            a {
+                text-indent: 0px;
+            }
+
+            /*date*/
+            &:nth-child(1) {
+                width: 123px;
+            }
+
+            /*Amounts and Actions*/
+            &:nth-child(3),
+            &:nth-child(4),
+            &:nth-child(5),
+            &:nth-child(7) {
+                width: 106px;
+            }
+        }
+
+        tr.transaction {
+            &:hover {
+                background: $table-row-hover-background !important;
+            }
+
+            &:nth-child(odd) {
+                background: $table-odd-row-background;
+            }
+
+            .delete-transaction {
+                margin-left: 10px;
+            }
+
+            a.edit-transaction-state {
+                width: 13px;
+                text-align: center;
+                &.staged {
+                    color: whitesmoke;
+                    i:before {
+                        content: "\f155";
+                    }
+                }
+
+                &.paid {
+                    color: $primary-color;
+                    i:before {
+                        content: "\f155";
+                    }
+                }
+
+                &.pending {
+                    color: $secondary-color;
+                    i:before {
+                        content: "\f0e0";
+                    }
+                }
+
+                &.error {
+                    color: red;
+                }
+            }
+        }
+    }
+}
+
+form.transaction-form {
+    margin-top: 10px;
+
+    div.cell {
+        float: left;
+        overflow: auto;
+        margin-right: 10px;
+
+        label {
+            float: left;
+            clear:both;
+        }
+
+        input {
+            float: left;
+            clear: left;
+        }
+
+        &.state {
+            .button {
+                width: 13px;
+                text-align: center;
+
+                color: light-gray;
+
+                &.enabled {
+                    color: light-black;
+                    border: 1px solid #aaa;
+                }
+
+                &.paid.enabled {
+                    color: $primary-color;
+                }
+
+                &.pending.enabled {
+                    color: $secondary-color;
+                }
+            }
+
+            label {
+                margin-right: 4px;
+            }
+        }
+
+        &.debit input{
+            float: none;
+        }
+
+        &.debit, &.state {
+            padding-top: 18px;
+        }
+
+        &.categories {
+            width: 370px;
+            overflow-x: hidden;
+
+            #categories-tag-area {
+                height: 59px;
+                margin-left: 20px;
+
+                span.taggle_placeholder {
+                    position: relative;
+                    top: 31px;
+                    left: -41px;
+                }
+
+            }
+        }
+    }
+}

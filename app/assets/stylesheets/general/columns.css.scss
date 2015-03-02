@@ -1,0 +1,22 @@
+.column {
+    &.two {
+        float: right;
+        width: 50%;
+    }
+
+    &.small {
+        width: 25%;
+    }
+
+    &.left {
+        float: left;
+        &.two {
+            width: 50%;
+
+            &.large {
+                width: 75%;
+            }
+        }
+    }
+
+}

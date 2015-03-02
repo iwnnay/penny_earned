@@ -1,0 +1,38 @@
+<div>
+<table class="transactions">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Info</th>
+            <th>Amount</th>
+            <th>Banked</th>
+            <th>Estimated</th>
+            <th>Categories</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <% transactions.non_placeholders.reorder(date: :desc, created_at: :desc).each do |transaction|%>
+        <tr class="transaction" data-recurring="<%= !!transaction.recurrence_id %>">
+            <td><%= transaction.date.strftime('%m/%d/%Y') %></td>
+            <td><%= transaction.description %></td>
+            <td <%= transaction.debit ? '' : 'class="credit"'.html_safe %>><%= transaction.amount %></td>
+            <td <%= error_class(transaction.banked) %>><%= transaction.banked %></td>
+            <td <%= error_class(transaction.estimated) %>><%= transaction.estimated %></td>
+            <td><%= transaction.categories.collect {|category| category.name}.join(", ") %></td>
+            <td>
+                <%= link_to '', '#',
+                    class: "edit-transaction button icon fa fa-pencil",
+                        data: {id: transaction.id} %>
+                        <%= link_to '<i class="fa" />'.html_safe, '#',
+                    class: "edit-transaction-state button icon fa #{transaction.state}",
+                        data: {id: transaction.id, state: transaction.state} %>
+                <%= link_to '', '#',
+                    class: "delete-transaction button icon fa fa-trash-o",
+                        data: {id: transaction.id} %>
+            </td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>
+</div>

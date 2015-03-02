@@ -1,0 +1,9 @@
+<h3>Current Totals</h3>
+<div class="account-total">
+    <span class="label">In the bank:</span>
+    <span <%= error_class(account.total, 'amount') %>><%= account.total %></span>
+</div>
+<div class="account-estimated">
+    <span class="label">Estimated:</span>
+    <span <%= error_class(account.estimated, 'amount') %>><%= account.estimated %></span>
+</div>

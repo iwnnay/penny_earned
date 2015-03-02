@@ -1,0 +1,116 @@
+@import 'variables';
+
+.button {
+    text-decoration: none;
+
+    &.waiting i {
+        color: black;
+        -webkit-animation: waiting 2s infinite linear;
+        animation: waiting 2s infinite linear;
+
+        &:before {
+            content: "\f1ce" !important;
+        }
+    }
+
+    &.icon {
+        padding: 2.5px;
+        border: 1px solid #eee;
+        color: gray;
+        border-radius: 6px;
+        background: white;
+        height: 13px;
+        width: 13px;
+        text-align: center;
+
+        &:hover {
+            color: $primary-color;
+        }
+
+        &:active {
+            color: $secondary-color;
+        }
+    }
+
+    &:hover {
+        background: #ffe;
+        cursor: pointer;
+    }
+
+    &.primary, &.secondary {
+        color: white;
+        line-height: 44px;
+        padding: 5px 10px;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        margin: 4px 4px 0 0;
+
+        &:hover {
+            color: #333;
+        }
+    }
+
+    &.primary {
+        background: $primary-button-color;
+        color: $primary-button-font-color;
+
+        &:hover {
+            background: $primary-button-hover-color;
+            color: $primary-button-hover-font-color;
+        }
+
+    }
+
+    &.secondary {
+        background: $secondary-button-color;
+        color: $secondary-button-font-color;
+
+        &:hover {
+            background: $secondary-button-hover-color;
+            color: $secondary-button-hover-font-color;
+        }
+
+    }
+    &.general {
+        background: $general-button-background-color;
+        color: $general-button-color;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #dfdfdf;
+        box-shadow: 1px 1px #ccc;
+        margin: 2px;
+        font-weight: bold;
+
+        &:hover {
+            background: $general-button-hover-background-color;
+            color: $general-button-hover-color;
+            box-shadow: -2px -2px #ddd;
+            border: 1px solid #eee;
+        }
+
+        &::before {
+            margin-right: 10px;
+        }
+    }
+}
+
+@-webkit-keyframes waiting {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes waiting {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}

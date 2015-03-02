@@ -1,0 +1,39 @@
+@import 'compass';
+
+$primary-color: #23B7E5;
+
+$secondary-color: #37BC9B;
+$tirtiary-color: #FF902B;
+$quaternary-color: #7266BA;
+$quinary-color: #5D9CEC;
+$senary-color: #F05050;
+
+$error-color: #F05050;
+
+$font-color: #333;
+
+$body-background: #FDFDFD;
+$title-background: #FAFAFA;
+
+/*buttons*/
+$primary-button-font-color: darken(white, 5%);
+$primary-button-hover-font-color: lighten($primary-button-font-color, 5%);
+
+$primary-button-color: $primary-color;
+$primary-button-hover-color: lighten($primary-color, 15%);
+
+$secondary-button-font-color: $primary-button-font-color;
+$secondary-button-hover-font-color: $primary-button-hover-font-color;
+
+$secondary-button-color: gray;
+$secondary-button-hover-color: lighten($secondary-button-color, 15%);
+
+$general-button-color: lighten(gray, 15%);
+$general-button-hover-color: gray;
+$general-button-background-color: darken(white, 1%);
+$general-button-hover-background-color: white;
+
+
+/*Tables*/
+$table-odd-row-background: whitesmoke;
+$table-row-hover-background: darken(whitesmoke, 10%);

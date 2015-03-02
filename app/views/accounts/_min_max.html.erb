@@ -1,0 +1,11 @@
+<h3>High and Low Months</h3>
+<div class="row min">
+    <%= link_to account.min_review.date.strftime('%b %Y') + ':',
+        account_review_path(account.id, account.min_review.month, account.min_review.year) %>
+    <span <%= error_class(account.min) %>><%= account.min %></span>
+</div>
+<div class="row max">
+    <%= link_to account.max_review.date.strftime('%b %Y') + ':',
+        account_review_path(account.id, account.max_review.month, account.max_review.year) %>
+    <span <%= error_class(account.max) %>><%= account.max %></span>
+</div>
