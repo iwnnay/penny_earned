@@ -7,9 +7,7 @@ class Transaction < ActiveRecord::Base
 
   after_save :create_categories
 
-  scope :non_placeholders, -> { where.not(state: 'placeholder') }
-
-  STATES = %w{placeholder staged paid pending}
+  STATES = %w{placeholder paid pending}
 
   validates :account_id, presence: true
   validates :state, inclusion: {in: Transaction::STATES}
@@ -58,7 +56,7 @@ class Transaction < ActiveRecord::Base
             {
               date: projection_date,
               id: nil,
-              state: 'staged',
+              state: 'placeholder',
               categories: categories
             }
           )

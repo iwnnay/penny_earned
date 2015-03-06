@@ -23,7 +23,7 @@ FactoryGirl.define do
     description 'test transaction'
     amount 9.99
     date { t = Time.now; Time.new(t.year,t.month,t.day) }
-    state 'staged'
+    state 'placeholder'
   end
 
   factory :recurrence do

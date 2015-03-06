@@ -7,7 +7,7 @@ PennyEarned::Application.routes.draw do
   resources :accounts do
     get '/totals', to: 'accounts#totals', as: 'totals'
     get '/min_max', to: 'accounts#min_max', as: 'min_max'
-    resources :transactions, except: [:new, :edit]
+    resources :transactions, except: [:edit]
     resources :monthly_reviews, only: [:index]
   end
 

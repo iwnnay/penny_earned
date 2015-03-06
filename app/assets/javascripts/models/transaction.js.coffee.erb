@@ -16,7 +16,7 @@ class bank.Transaction
                     @displayForm('edit')
             })
         else
-            bank.Ajax.post(@transactionsPath(), {
+            bank.Ajax.get(@transactionNewPath(), {
                 data:
                     transaction:
                         date: bank.Format.dateBack()
@@ -28,8 +28,6 @@ class bank.Transaction
 
     cleanDataForFrontEnd: ->
         @data.date = bank.Format.dateFront(@data.date) if @data.date
-        if @data.state == bank.Transaction.STATES[0]
-            @data.state = bank.Transaction.STATES[1]
 
     displayForm: (type) ->
         @messenger = bank.Messenger.show(
@@ -141,7 +139,12 @@ class bank.Transaction
     update: (options = {}) ->
         new Error('No data to update') unless options.data
 
-        bank.Ajax.patch(@transactionPath(), options)
+        if @id
+          action = {type: 'patch', path: @transactionPath()}
+        else
+          action = {type: 'post', path: @transactionsPath()}
+
+        bank.Ajax[action.type](action.path, options)
 
     getData: ->
         {
@@ -212,6 +215,9 @@ class bank.Transaction
 
     transactionsPath: ->
         Routes.account_transactions_path(accountId)
+
+    transactionNewPath: ->
+        Routes.new_account_transaction_path(accountId)
 
     @refreshIndex: ->
         $('.transactions-wrapper').addClass('waiting')

@@ -13,6 +13,10 @@ class TransactionsController < ApplicationController
     end
   end
 
+  def new
+    render json: Transaction.new
+  end
+
   def update
     transaction = Transaction.find(params[:id])
     if params[:transaction]
@@ -65,6 +69,7 @@ class TransactionsController < ApplicationController
     return nil if params[:preserve_categories]
     params[:categories] || []
   end
+
   def acceptable_params
     params.require(:transaction)
       .permit(:account_id, :description, :date, :amount, :state, :debit)

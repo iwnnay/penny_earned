@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-    <% transactions.non_placeholders.reorder(date: :desc, created_at: :desc).each do |transaction|%>
+    <% transactions.reorder(date: :desc, created_at: :desc).each do |transaction|%>
         <tr class="transaction" data-recurring="<%= !!transaction.recurrence_id %>">
             <td><%= transaction.date.strftime('%m/%d/%Y') %></td>
             <td><%= transaction.description %></td>
