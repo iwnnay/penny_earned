@@ -25,14 +25,6 @@ RSpec.describe Transaction, :type => :model do
     @trans ||= FactoryGirl.create :transaction, account: account
   end
 
-  describe 'scopes' do
-    it 'should include non_placeholders' do
-      expect do
-        trans
-      end.to change{Transaction.non_placeholders.count}.by(1)
-    end
-  end
-
   describe 'validations' do
     it 'should stop a user from creating a transaction before the start date of the parenting account' do
       account = FactoryGirl.create :account
@@ -263,7 +255,7 @@ RSpec.describe Transaction, :type => :model do
       {tr: '3.months', change: MonthlyReview::FUTURE_MONTHS / 3 - 1},
       {tr: 'end_of_month', change: MonthlyReview::FUTURE_MONTHS - 1}
     ].each do |t|
-      it "should have a change of #{t[:change]} for timeframe of #{t[:tr]}", :focus do
+      it "should have a change of #{t[:change]} for timeframe of #{t[:tr]}" do
         trans.recurrence = FactoryGirl.create :recurrence, timeframe: t[:tr]
         expect do
           trans.progenerate
