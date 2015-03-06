@@ -257,13 +257,13 @@ RSpec.describe Transaction, :type => :model do
     end
 
     [
-      {tr: '1.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 52 - ((Time.now.day / 7))},
-      {tr: '2.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 26 - ((Time.now.day / 6 * 0.05).ceil)},
+      {tr: '1.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 52 - ((Time.now.day / 7.0).ceil)},
+      {tr: '2.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 26 - ((Time.now.day / 7.0).ceil)},
       {tr: '1.months', change: MonthlyReview::FUTURE_MONTHS - 1},
       {tr: '3.months', change: MonthlyReview::FUTURE_MONTHS / 3 - 1},
       {tr: 'end_of_month', change: MonthlyReview::FUTURE_MONTHS - 1}
     ].each do |t|
-      it "should have a change of #{t[:change]} for timeframe of #{t[:tr]}" do
+      it "should have a change of #{t[:change]} for timeframe of #{t[:tr]}", :focus do
         trans.recurrence = FactoryGirl.create :recurrence, timeframe: t[:tr]
         expect do
           trans.progenerate
