@@ -80,7 +80,6 @@ class AccountsController < ApplicationController
     def clear_extras
       return if @account.nil?
       clear_categories
-      clear_transactions
     end
 
     def clear_categories
@@ -88,10 +87,4 @@ class AccountsController < ApplicationController
         category.destroy if category.transactions.empty?
       end
     end
-
-    def clear_transactions
-      @account.transactions.where(state: Transaction::STATES[0])
-        .destroy_all
-    end
-
 end

@@ -44,7 +44,7 @@ div.transactions-wrapper {
             a.edit-transaction-state {
                 width: 13px;
                 text-align: center;
-                &.staged {
+                &.placeholder {
                     color: whitesmoke;
                     i:before {
                         content: "\f155";

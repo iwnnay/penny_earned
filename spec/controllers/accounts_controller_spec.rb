@@ -66,8 +66,9 @@ RSpec.describe AccountsController, :type => :controller do
 
     it 'should be able to find transactions for a specific month/year' do
       time = Time.now + 3.months
-      account.transactions << FactoryGirl.create(:transaction)
-      account.transactions << t = FactoryGirl.create(:transaction, date: time)
+      account.save
+      FactoryGirl.create(:transaction, account_id: account.id)
+      t = FactoryGirl.create(:transaction, date: time, account_id: account.id)
 
       get :show, {id: account.id, month: time.month, year: time.year}
       expect(assigns(:transactions)).to eq([t])
