@@ -8,7 +8,6 @@ class TransactionsController < ApplicationController
       if success
         transaction.update_categories params[:categories]
         transaction.handle_recurrence params[:recurrence]
-        transaction.calculate_month
       end
     end
   end
@@ -30,7 +29,6 @@ class TransactionsController < ApplicationController
           transaction.handle_recurrence params[:recurrence]
         end
 
-        transaction.calculate_month
       end
     end
   end
@@ -59,7 +57,6 @@ class TransactionsController < ApplicationController
       success = !!transaction.destroy
     end
 
-    transaction.calculate_month
     render json: {success: success}
   end
 

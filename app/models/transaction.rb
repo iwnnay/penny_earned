@@ -24,11 +24,6 @@ class Transaction < ActiveRecord::Base
     create_categories unless id.nil?
   end
 
-  def calculate_month
-      review = account.review_for(date)
-      review.calculate_totals
-  end
-
   def handle_recurrence(rec_atts)
     return if rec_atts.nil?
     attributes = {
