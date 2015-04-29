@@ -30,11 +30,11 @@ class Account < ActiveRecord::Base
   end
 
   def start_month
-    started_date.strftime('%m')
+    started_date.month
   end
 
   def start_year
-    started_date.strftime('%Y')
+    started_date.year
   end
 
   def review_for(time)
@@ -49,9 +49,9 @@ class Account < ActiveRecord::Base
     last_transaction.estimated
   end
 
-  def update_after(time)
-    monthly_reviews.each do |review|
-      review.calculate_totals if review.date > time
+  def calculate_range(start, finish = end_date)
+    monthly_reviews.where(date: start..finish).each do |review|
+      review.calculate_totals
     end
   end
 
