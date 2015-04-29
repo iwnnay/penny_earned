@@ -58,12 +58,17 @@ class AccountsController < ApplicationController
     render partial: 'min_max', locals: {account: @account}
   end
 
-  def update_future_reviews
-    time = Time.new(params[:year], params[:month])
+  def calculate_range
+    @account = Account.find(params[:id])
+    start_time = Time.new(params[:start_year], params[:start_month]).beginning_of_month
 
-    Account.find(params[:id]).update_after(time)
+    if !params[:end_month].nil?
+      end_time = Time.new(params[:end_year], params[:end_month]).end_of_month
+    end
 
-    render json: { success: true }
+    @account.calculate_range(start_time, end_time)
+
+    render nothing: true
   end
 
   private

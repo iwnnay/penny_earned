@@ -9,7 +9,8 @@ class ApplicationController < ActionController::Base
       render json: record
     else
       yield false if block_given?
-      render json: { errors: record.errors.full_messages
+      render json: {
+        errors: record.errors.full_messages
       }, status: :unprocessable_entity
     end
   end

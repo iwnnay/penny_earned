@@ -4,17 +4,21 @@ class bank.Transaction
         @data = {categories: []}
         @waiting = false
 
+    load: (callback = ->) ->
+        new Error('Can not load transaction without id') unless @id
+        bank.Ajax.get(@transactionPath(), {
+            success: (@data) =>
+                @waiting = false
+                @data.date = bank.Format.dateFront(@data.date) if @data.date
+                callback(@) ->
+        })
+
     showForm: ->
         @waiting = true
 
-
         if @id
-            bank.Ajax.get(@transactionPath(), {
-                success: (@data) =>
-                    @waiting = false
-                    @data.date = bank.Format.dateFront(@data.date) if @data.date
-                    @displayForm('edit')
-            })
+            @load =>
+                @displayForm('edit')
         else
             bank.Ajax.get(@transactionNewPath(), {
                 data:
@@ -73,7 +77,7 @@ class bank.Transaction
                     success: (@data) =>
                         @waiting = false
                         @messenger.hide()
-                        bank.Transaction.refreshIndex()
+                        @refreshIndex()
                     error: (response) =>
                         console.alert response
                         #TODO add errors
@@ -175,11 +179,13 @@ class bank.Transaction
         affectSeries = yesRecurrence
         affectSeries = true if !@data.recurrence_id && @recurrence.values().timeframe
 
+        console.log
         {
             transaction: formData
             categories: categories
             recurrence: @recurrence.values()
             affectSeries: affectSeries
+            currentTime: bank.Account.time
         }
 
     delete: ->
@@ -187,7 +193,7 @@ class bank.Transaction
             bank.Ajax.delete @transactionPath(), {
                 data: {forward_transactions: forwardTransactions}
                 success: =>
-                    bank.Transaction.refreshIndex()
+                    @refreshIndex()
             }
 
         if @hasRecurrence()
@@ -211,38 +217,34 @@ class bank.Transaction
         @recurring
 
     transactionPath: ->
-        Routes.account_transaction_path(accountId, @id || @data.id)
+      Routes.account_transaction_path(accountId, @id || @data.id)
 
     transactionsPath: ->
-        Routes.account_transactions_path(accountId)
+      Routes.account_transactions_path(accountId)
 
     transactionNewPath: ->
-        Routes.new_account_transaction_path(accountId)
+      Routes.new_account_transaction_path(accountId)
 
-    @refreshIndex: ->
-        $('.transactions-wrapper').addClass('waiting')
-        bank.Ajax.get(Routes.account_transactions_path(accountId), {
-            dataType: 'html'
-            success: (data) ->
-                $('.transactions-wrapper').html(data)
-                $('.transactions-wrapper').removeClass('waiting')
-            data:
-                month: bank.Account.time.month
-                year: bank.Account.time.year
-        })
-        bank.Account.refreshTotals()
+    updateState: (state, options = {}) ->
+      options.data = {
+          transaction:
+              state: state
+          preserve_categories: true
+      }
 
-    @updateState: (id, state, options = {}) ->
-        transaction = new bank.Transaction(id)
-        options.data = {
-            transaction:
-                state: state
-            preserve_categories: true
+      @update(options)
+
+    dateObject: ->
+        return {} unless @data.date
+        date = new Date(@data.date)
+        {
+            month: date.getMonth() + 1
+            year: date.getYear() + 1900
         }
 
-        transaction.update(options)
-
-        transaction
+    refreshIndex: ->
+      $('.transactions-wrapper').addClass('waiting')
+      bank.Account.refreshPage(@dateObject())
 
 
 #general click events
@@ -300,14 +302,16 @@ $ ->
         clearTimeout clickDelay[id]
         if state != btn.data('state')
             clickDelay[id] = setTimeout ->
-                bank.Transaction.updateState id, state, {
+                transaction = new bank.Transaction(id)
+                transaction.updateState state, {
                     success: ->
                         btn.removeClass('waiting')
                         btn.data('state', state)
 
                         delete clickDelay[id]
                         if Object.keys(clickDelay).length == 0
-                            bank.Transaction.refreshIndex()
+                            transaction.load ->
+                                transaction.refreshIndex()
 
                     error: (data)->
                         btn.addClass('error')
