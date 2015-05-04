@@ -1,6 +1,6 @@
 module AccountsHelper
   def error_class(amount, additional_classes = '')
-      "class=\"#{amount < 0 ? 'error ' : '' }#{additional_classes}\"".html_safe
+      "class=\"#{(amount.nil? ? false : amount < 0) ? 'error ' : '' }#{additional_classes}\"".html_safe
   end
 
   def review_shortcut_links

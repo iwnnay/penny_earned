@@ -60,10 +60,13 @@ class AccountsController < ApplicationController
 
   def calculate_range
     @account = Account.find(params[:id])
-    start_time = Time.new(params[:start_year], params[:start_month]).beginning_of_month
+    start_time = Time.new(params[:start][:year].to_i,
+                          params[:start][:month].to_i).beginning_of_month
 
-    if !params[:end_month].nil?
-      end_time = Time.new(params[:end_year], params[:end_month]).end_of_month
+    unless params[:finish].nil?
+      end_time = Time.new(
+        params[:finish][:year].to_i, params[:finish][:month].to_i)
+        .end_of_month
     end
 
     @account.calculate_range(start_time, end_time)

@@ -3,19 +3,17 @@ class bank.Account
     @data = {}
 
     @refreshPage: (fromDate) ->
-        #should see if fromDate is before current date else it's current date
       bank.Account.calculateRange fromDate, true, ->
           bank.Ajax.get(Routes.account_transactions_path(accountId), {
               dataType: 'html'
               success: (data) ->
                   $('.transactions-wrapper').html(data)
                   $('.transactions-wrapper').removeClass('waiting')
-                  #update after this review
                   bank.Account.calculateRange fromDate, false, ->
                       bank.Account.refreshTotals()
               data:
-                  month: bank.Account.time.month
-                  year: bank.Account.time.year
+                  start_month: bank.Account.time.month
+                  start_year: bank.Account.time.year
           })
 
     @calculateRange: (fromDate, toCurrent, callback = ->) ->
@@ -26,12 +24,10 @@ class bank.Account
       else
           finish = null
 
-      bank.Ajax.get(Routes.account_calculate_path(accountId), {
+      bank.Ajax.post(Routes.account_calculate_path(accountId), {
           dataType: 'html'
           success: (data) ->
-              $('.transactions-wrapper').html(data)
-              $('.transactions-wrapper').removeClass('waiting')
-              bank.Account.freshAll(fromDate)
+              callback()
           data:
               start:
                   month: fromDate.month

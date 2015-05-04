@@ -2,7 +2,7 @@ PennyEarned::Application.routes.draw do
   get '/assets', to: 'application#assets' if Rails.env == 'development'
 
   get '/accounts/:id/reviews/:month/:year', to: 'accounts#show', as: 'account_review'
-  post '/accounts/:id/caclulate_range', to: 'accounts#calculate_range',
+  post '/accounts/:id/calculate_range', to: 'accounts#calculate_range',
     as: 'account_calculate'
 
   resources :accounts do

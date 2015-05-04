@@ -177,4 +177,32 @@ RSpec.describe AccountsController, :type => :controller do
     end
   end
 
+  describe "POST calculate_range" do
+    before(:each) do
+      @t = FactoryGirl.create(:transaction)
+    end
+
+    def time_hash(start_time = nil, end_time = nil)
+      start_time = Time.now.beginning_of_month if start_time.nil?
+      {id: @t.account.id, start: {month: start_time.month.to_s, year: start_time.year.to_s}}.merge(
+        end_time.nil? ? {} : {finish: {month: end_time.month.to_s, year: end_time.year.to_s}}
+      )
+    end
+
+    it "should render nothing" do
+      post :calculate_range, time_hash
+      expect(response.body).to eq(' ')
+    end
+
+    it "should calculate the reviews between the start and finish times" do
+      post :calculate_range, time_hash(nil,Time.now.end_of_month)
+      expect(Transaction.find(@t.id).estimated).not_to be_nil
+    end
+
+    it "should allow for the finish time to be nil" do
+      post :calculate_range, time_hash
+      expect(Transaction.find(@t.id).estimated).not_to be_nil
+    end
+  end
+
 end

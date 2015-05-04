@@ -49,7 +49,8 @@ class Account < ActiveRecord::Base
     last_transaction.estimated
   end
 
-  def calculate_range(start, finish = end_date)
+  def calculate_range(start, finish = nil)
+    finish = end_date if finish.nil?
     monthly_reviews.where(date: start..finish).each do |review|
       review.calculate_totals
     end
