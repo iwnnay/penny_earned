@@ -3,36 +3,41 @@ class bank.Account
     @data = {}
 
     @refreshPage: (fromDate) ->
-      bank.Account.calculateRange fromDate, true, ->
-          bank.Ajax.get(Routes.account_transactions_path(accountId), {
-              dataType: 'html'
-              success: (data) ->
-                  $('.transactions-wrapper').html(data)
-                  $('.transactions-wrapper').removeClass('waiting')
-                  bank.Account.calculateRange fromDate, false, ->
-                      bank.Account.refreshTotals()
-              data:
-                  start_month: bank.Account.time.month
-                  start_year: bank.Account.time.year
-          })
+      bank.Account.calculateRange fromDate, true, =>
+          bank.Ajax.get(
+              Routes.account_transactions_path(accountId), {
+                  dataType: 'html'
+                  success: (data) ->
+                      $('.transactions-wrapper').html(data)
+                      $('.transactions-wrapper').removeClass('waiting')
+                      bank.Account.calculateRange fromDate, false, ->
+                          bank.Account.refreshTotals()
+                  data:
+                      month: @time.month
+                      year: @time.year
+              })
 
     @calculateRange: (fromDate, toCurrent, callback = ->) ->
       if toCurrent
-          finish =
+          if @time.year < fromDate.year and @time.month < fromDate.month
+              return callback()
+
+          finish = finish:
               month: bank.Account.time.month
               year: bank.Account.time.year
       else
-          finish = null
+          finish = {}
+
 
       bank.Ajax.post(Routes.account_calculate_path(accountId), {
           dataType: 'html'
           success: (data) ->
               callback()
-          data:
+          data: $.extend(
               start:
                   month: fromDate.month
                   year: fromDate.year
-              finish: finish
+          , finish)
       })
 
     @refreshTotals: () ->
@@ -41,10 +46,6 @@ class bank.Account
                 $('.totals-wrapper').html(data)
                 refreshMinMax()
             dataType: 'HTML'
-
-        bank.Ajax.post(Routes
-            .account_review_path(accountId, @time.month, @time.year)
-        )
 
     refreshMinMax = ->
         bank.Ajax.get Routes.account_min_max_path(accountId),
