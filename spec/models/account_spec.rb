@@ -41,7 +41,7 @@ RSpec.describe Account, :type => :model do
     end
   end
 
-  describe '#update_after' do
+  describe '#calculate_range' do
     it 'should run calculate_totals for future reviews' do
       @account = FactoryGirl.create :account
       @account.transactions << FactoryGirl.create(:transaction)
@@ -53,7 +53,7 @@ RSpec.describe Account, :type => :model do
       aft = @account.monthly_reviews.at(2.months.from_now).first
       t_aft = aft.estimated_total
 
-      @account.update_after(1.months.from_now)
+      @account.calculate_range(1.months.from_now)
 
       expect(bef.banked_total).to eq(t_bef)
       expect(aft.reload.estimated_total).to be < t_aft
@@ -72,7 +72,7 @@ RSpec.describe Account, :type => :model do
         description: 'max', amount: 200.00, debit: false,
         date: Time.now + 2.months, account: @account)
 
-      @account.update_after(Time.now - 1.months)
+      @account.calculate_range(Time.now - 1.months)
     end
 
     it 'should find the min of all the monthly reviews' do
