@@ -147,18 +147,6 @@ RSpec.describe Transaction, :type => :model do
     end
   end
 
-  describe '#calculate_month' do
-    it 'should have the current month recalculate it\'s totals' do
-      r = account.review_for(trans.date)
-      trans.calculate_month
-      added = 126
-      expect do
-        trans.update_attribute(:amount, trans.amount + added)
-        trans.calculate_month
-      end.to change{MonthlyReview.find(r.id).estimated_total}.by((added) * -1)
-    end
-  end
-
   describe '#handle_recurrence' do
     it 'should do nothing if there is no recurrence' do
       returned = false
