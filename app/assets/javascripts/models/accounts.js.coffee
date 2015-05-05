@@ -3,13 +3,14 @@ class bank.Account
     @data = {}
 
     @refreshPage: (fromDate) ->
+      shroud = new bank.Shroud('.transactions-wrapper').on()
       bank.Account.calculateRange fromDate, true, =>
           bank.Ajax.get(
               Routes.account_transactions_path(accountId), {
                   dataType: 'html'
                   success: (data) ->
                       $('.transactions-wrapper').html(data)
-                      $('.transactions-wrapper').removeClass('waiting')
+                      shroud.remove()
                       bank.Account.calculateRange fromDate, false, ->
                           bank.Account.refreshTotals()
                   data:
