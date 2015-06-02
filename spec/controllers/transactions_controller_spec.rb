@@ -179,13 +179,13 @@ RSpec.describe TransactionsController, :type => :controller do
 
     it 'should set a time with the current time one is not given' do
       get :index, account_id: @a.id
-      expect(assigns(:time)).to be > 2.seconds.ago
+      expect(assigns(:time)).to eq(Date.today)
     end
 
     it 'should set a @time with the given time' do
       t = 3.months.from_now
       get :index, month: t.month, year: t.year, account_id: @a.id
-      expect(assigns(:time)).to eq(Time.new(t.year, t.month))
+      expect(assigns(:time)).to eq(Date.new(t.year, t.month))
     end
 
     it 'should set a @transactions with the accounts transactions' do

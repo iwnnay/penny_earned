@@ -8,13 +8,13 @@ class Account < ActiveRecord::Base
   belongs_to :user
   has_many :transactions
   has_many :future_transactions, -> (account) {
-    where(date: Time.now.beginning_of_month..account.end_date)
+    where(date: Date.today.beginning_of_month..account.end_date)
   }, class_name: 'Transaction'
   has_many :categories
   has_many :monthly_reviews
   has_many :recurrences, through: :transactions
   has_one :most_recent_transaction, -> {
-    where(date: Time.now.beginning_of_month..Time.now)
+    where(date: Date.today.beginning_of_month..Date.today)
     .order(date: :desc, created_at: :desc).limit(1)
   }, class_name: 'Transaction'
   has_one :meta

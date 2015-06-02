@@ -39,7 +39,7 @@ class TransactionsController < ApplicationController
 
   def index
     @account = Account.find(params[:account_id])
-    @time = params[:year] ? Time.new(params[:year], params[:month]) : Time.now
+    @time = (params[:year] ? Date.new(params[:year].to_i, params[:month].to_i) : Date.today)
     @transactions = @account.monthly_reviews.at(@time).first.transactions
 
     render partial: 'accounts/transactions',

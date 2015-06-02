@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150210124022) do
+ActiveRecord::Schema.define(version: 20150602043619) do
 
   create_table "accounts", force: true do |t|
     t.integer  "user_id",                                                null: false
@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20150210124022) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.decimal  "starting_amount", precision: 20, scale: 2, default: 0.0
-    t.datetime "starting_date",                                          null: false
+    t.date     "starting_date",                                          null: false
   end
 
   create_table "categories", force: true do |t|
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 20150210124022) do
     t.decimal  "estimated_total", precision: 20, scale: 2,               null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.datetime "date",                                                   null: false
+    t.date     "date",                                                   null: false
     t.decimal  "credits",         precision: 20, scale: 2, default: 0.0
     t.decimal  "debits",          precision: 20, scale: 2, default: 0.0
     t.decimal  "difference",      precision: 20, scale: 2, default: 0.0
@@ -58,13 +58,13 @@ ActiveRecord::Schema.define(version: 20150210124022) do
     t.boolean  "active",        default: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.datetime "original_date"
+    t.date     "original_date"
   end
 
   create_table "transactions", force: true do |t|
     t.integer  "account_id",                                                        null: false
     t.decimal  "amount",           precision: 8,  scale: 2, default: 0.0,           null: false
-    t.datetime "date",                                                              null: false
+    t.date     "date",                                                              null: false
     t.string   "description",                               default: ""
     t.string   "state",                                     default: "placeholder"
     t.boolean  "debit",                                     default: true

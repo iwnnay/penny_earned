@@ -62,8 +62,7 @@ RSpec.describe Transaction, :type => :model do
       end
 
       it 'should be about now for date' do
-        actual = !@transaction.date.nil? && @transaction.date > 5.minutes.ago && @transaction.date < Time.now
-        expect(actual).to eq(true)
+        expect(@transaction.date).to eq(Date.today)
       end
     end
   end
@@ -237,8 +236,8 @@ RSpec.describe Transaction, :type => :model do
     end
 
     [
-      {tr: '1.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 52 - ((Time.now.day / 7.0).ceil)},
-      {tr: '2.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 26 - ((Time.now.day / 7.0).ceil)},
+      {tr: '1.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 52 },
+      {tr: '2.weeks', change: (MonthlyReview::FUTURE_MONTHS / 12 ) * 26 },
       {tr: '1.months', change: MonthlyReview::FUTURE_MONTHS - 1},
       {tr: '3.months', change: MonthlyReview::FUTURE_MONTHS / 3 - 1},
       {tr: 'end_of_month', change: MonthlyReview::FUTURE_MONTHS - 1}

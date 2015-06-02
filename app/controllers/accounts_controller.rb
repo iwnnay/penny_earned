@@ -16,7 +16,7 @@ class AccountsController < ApplicationController
       redirect_to root_path
     else
       @time = params[:year] ?
-        Time.new(params[:year], params[:month]) : Time.now.beginning_of_month
+        Date.new(params[:year].to_i, params[:month].to_i) : Date.today.beginning_of_month
       @transactions = @account.review_for(@time).transactions
 
       respond_with(@account)
@@ -60,11 +60,11 @@ class AccountsController < ApplicationController
 
   def calculate_range
     @account = Account.find(params[:id])
-    start_time = Time.new(params[:start][:year].to_i,
+    start_time = Date.new(params[:start][:year].to_i,
                           params[:start][:month].to_i).beginning_of_month
 
     unless params[:finish].nil?
-      end_time = Time.new(
+      end_time = Date.new(
         params[:finish][:year].to_i, params[:finish][:month].to_i)
         .end_of_month
     end
