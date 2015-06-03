@@ -2,7 +2,7 @@
   var accountId = <%= @account.id %>;
   bank.Account.time = {month: <%= @time.month %>, year: <%= @time.year %>}
   bank.accountCategories = <%= @account.categories.collect {|cat| cat.name }.to_s.html_safe %>;
-  bank.Account.data = <%= @account.attributes.merge(max_date: (Time.now + MonthlyReview::FUTURE_MONTHS.months).end_of_month).to_json.html_safe %>
+  bank.Account.data = <%= @account.attributes.merge(max_date: (Date.today + MonthlyReview::FUTURE_MONTHS.months).end_of_month).to_json.html_safe %>
 </script>
 
 <div class="title-bar">

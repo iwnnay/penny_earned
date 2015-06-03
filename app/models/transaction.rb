@@ -86,7 +86,7 @@ class Transaction < ActiveRecord::Base
   private
 
   def set_default_date
-    self.date ||= Time.now
+    self.date ||= Date.today
   end
 
   def create_categories

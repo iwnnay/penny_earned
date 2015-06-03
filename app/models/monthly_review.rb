@@ -3,8 +3,8 @@ class MonthlyReview < ActiveRecord::Base
 
   belongs_to :account
   has_many :transactions, -> (review) {
-    time = Time.new(review.year, review.month)
-    where(date: time..time.end_of_month).order(date: :asc, created_at: :asc)
+    where(date: review.date..review.date.end_of_month)
+      .order(date: :asc, created_at: :asc)
   }, through: :account
   scope :at, -> (time) {
     where(month: time.month, year: time.year)
@@ -42,7 +42,7 @@ class MonthlyReview < ActiveRecord::Base
   end
 
   def is_in_future?
-    Time.now.beginning_of_month <= date
+    Date.today.beginning_of_month <= date
   end
 
   def min
@@ -70,7 +70,7 @@ class MonthlyReview < ActiveRecord::Base
   end
 
   def month_ago
-    Time.new(year, month, 1) - 1.month
+    Date.new(year, month) - 1.months
   end
 
   def starting_banked
@@ -84,6 +84,6 @@ class MonthlyReview < ActiveRecord::Base
   end
 
   def add_date
-    write_attribute :date, Time.new(year, month)
+    write_attribute :date, Date.new(year, month)
   end
 end

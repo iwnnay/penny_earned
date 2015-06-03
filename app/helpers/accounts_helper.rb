@@ -5,8 +5,8 @@ module AccountsHelper
 
   def review_shortcut_links
     html = ''
-    is_current_month = @time.month == Time.now.month &&
-      @time.year == Time.now.year
+    is_current_month = @time.month == Date.today.month &&
+      @time.year == Date.today.year
 
     previous_review =  @account.review_for @time - 1.months
     next_review = @account.review_for @time + 1.months
@@ -20,7 +20,7 @@ module AccountsHelper
     if is_current_month
       html << 'month'
     else
-      html << review_link_for(Time.now, text: 'Current Month')
+      html << review_link_for(Date.today, text: 'Current Month')
     end
 
     if next_review
