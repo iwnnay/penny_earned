@@ -283,7 +283,7 @@ $ ->
 
 
     $('body').on 'click', '.button.edit-transaction-state', ->
-        count = 1
+        count = 0
         btn = $(this)
         id = btn.data('id')
         originalState = btn.data('state')
@@ -293,7 +293,7 @@ $ ->
                 count = i
                 btn.removeClass(state)
 
-        count = 1 if ++count == bank.Transaction.STATES.length
+        count = 0 if ++count == bank.Transaction.STATES.length
 
         btn.addClass((state = bank.Transaction.STATES[count]))
 
