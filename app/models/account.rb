@@ -8,7 +8,7 @@ class Account < ActiveRecord::Base
   belongs_to :user
   has_many :transactions
   has_many :future_transactions, -> (account) {
-    where(date: Date.today.beginning_of_month..account.end_date)
+    where(date: Date.tomorrow..account.end_date)
   }, class_name: 'Transaction'
   has_many :categories
   has_many :monthly_reviews
