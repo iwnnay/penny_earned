@@ -19,6 +19,8 @@ class bank.Account
               })
 
     @calculateRange: (fromDate, toCurrent, callback = ->) ->
+      fromDate = @time unless fromDate.month
+
       if toCurrent
           if @time.year < fromDate.year and @time.month < fromDate.month
               return callback()
