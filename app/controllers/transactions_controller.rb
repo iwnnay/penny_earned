@@ -60,6 +60,19 @@ class TransactionsController < ApplicationController
     render json: {success: success}
   end
 
+  def bulk_csv
+    bulk = BulkTransaction.add(
+      params['account_id'], CSVToTransactions.parse(params['csv_file'])
+    )
+
+    if bulk === true
+      redirect_to account_path(params['account_id'])
+    else
+      csv = CSV.new(bulk)
+      send_data csv, filename: "errors-#{Time.new.strftime('%s')}.csv"
+    end
+  end
+
   private
 
   def categories

@@ -27,7 +27,7 @@ class bank.Messenger
         bank.Messenger.count++
 
 
-    @show: (template, data, options = {}) ->
+    @show: (template, data = {}, options = {}) ->
         current_messenger = new Messenger(options)
         current_messenger.show(HandlebarsTemplates[template](data))
 
@@ -61,7 +61,7 @@ class bank.Messenger
         @populateDiv()
         @addShroudToPage()
         @slideDivDown()
-        @opts().openCallback()
+        @opts().openCallback(this)
 
         @
 

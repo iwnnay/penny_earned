@@ -35,5 +35,26 @@ div.title-area {
 
     .transaction-actions {
         float: right;
+        margin-right: 30px;
+
+        .transaction-dropdown {
+          float: right;
+          display: block;
+        }
+
+        ul {
+          display: block;
+          position: absolute;
+          overflow: visible;
+          padding: 17px;
+          background: white;
+          margin: 5px 0px 0px;
+          outline: 1px solid gray;
+          width: 171px;
+        }
+
+        ul.collapsed {
+          display: none;
+        }
     }
 }

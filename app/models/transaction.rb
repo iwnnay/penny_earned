@@ -9,7 +9,7 @@ class Transaction < ActiveRecord::Base
 
   STATES = %w{placeholder paid pending}
 
-  validates :account_id, presence: true
+  validates :account_id, :amount, presence: true
   validates :state, inclusion: {in: Transaction::STATES}
   validates :debit, inclusion: {in: [true, false]}
   validate :transaction_date_greater_than_account_start_date
@@ -94,12 +94,13 @@ class Transaction < ActiveRecord::Base
 
     categories.clear
     @categories_to_add.each do |name|
-      if (c = Category.where(name: name).first)
-        categories << c
-      else
-        categories << Category.create(account: account, user: user,
-          name: name)
+      category = Category.where(name: name).first
+      if category.nil?
+        category = Category.new(account: account, user: user, name: name)
+        raise "Could not create Category #{name.inspect}" unless category.save
       end
+
+      categories << category
     end
   end
 

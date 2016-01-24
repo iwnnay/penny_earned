@@ -260,6 +260,16 @@ $ ->
 
         false
 
+    $('body').on 'click', '.transaction-dropdown', ->
+        if $(this).hasClass('shown')
+            $(this).removeClass('shown').html('▼');
+            $(this).siblings('ul').addClass('collapsed')
+        else
+            $(this).addClass('shown').html('▲');
+            $(this).siblings('ul').removeClass('collapsed')
+
+        false
+
     $('body').on 'click', '.button.edit-transaction', ->
         unless $('form.transaction-form').length
             showTransaction($(this).data('id'))
