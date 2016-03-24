@@ -203,4 +203,7 @@ RSpec.describe TransactionsController, :type => :controller do
       assert :success
     end
   end
+
+  describe 'bulk_transaction' do
+  end
 end

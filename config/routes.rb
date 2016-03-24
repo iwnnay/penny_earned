@@ -8,6 +8,10 @@ PennyEarned::Application.routes.draw do
   resources :accounts do
     get '/totals', to: 'accounts#totals', as: 'totals'
     get '/min_max', to: 'accounts#min_max', as: 'min_max'
+    post '/transactions/bulk/csv/', to: 'transactions#bulk_csv',
+      as: 'transactions_bulk_csv'
+    get '/transactions/bulk/csv/', to: 'transactions#bulk_csv_new'
+
     resources :transactions, except: [:edit]
     resources :monthly_reviews, only: [:index]
   end

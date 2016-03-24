@@ -1,0 +1,73 @@
+<script>
+  var accountId = <%= params[:account_id] %>;
+</script>
+<%= form_tag({action: :bulk_csv}, id: 'bulk-csv-form', multipart: true) do %>
+<div class="row">
+    <div class="cell">
+        <p>A properly formatted CSV file will have a header row at the top with the related values descending underneath them.</p>
+        <p><h4>Proper Headers</h4><ul>
+            <li>Date</li>
+            <li>Amount</li>
+            <li>Debit (conditionally optional)</li>
+            <li>State (optional)</li>
+            <li>Categories (optional)</li>
+            <li>Description (optional)</li>
+        </ul>
+        <div>
+            <h5>Date</h5><ul>
+              <li>Needs to be in mm/dd/yyyy format</li>
+            </ul>
+        </div>
+        <div>
+            <h5>Amount</h5><ul>
+              <li>Preferably <b>without</b> note signifiers like '$'</li>
+            </ul>
+        </div>
+        <div>
+            <h5>Debit</h5><ul>
+              <li>when true it will mean the related amount is a deduction</li>
+              <li>Does not need to be included if amounts are negative and positive</li>
+              <li>Will default to true or amount as deduction</li>
+              <li>Valid entries are: (case insensitive)
+                <ul class="bulletted-list">
+                  <li>true or false</li>
+                  <li>debit or credit</li>
+                </ul>
+              </li>
+            </ul>
+        </div>
+        <div>
+          <h5>State</h5><ul>
+            <li>Valid states include:
+              <ul class="bulletted-list">
+                <li>placeholder (default)</li>
+                <li>Pending</li>
+                <li>Paid</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div>
+            <h5>Categories</h5><ul>
+              <li>Should only contain alpha-numerics, spaces, dashes and underscores</li>
+              <li>Should be deliminated by either a comma or semi-colon<li>
+            </ul>
+        </div>
+        <div>
+            <h5>Description</h5><ul>
+              <li>Should only contain alpha-numerics, spaces, dashes and underscores</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="csv cell">
+        <label for="date">CSV File:</label>
+        <%= file_field_tag "csv_file" %>
+    </div>
+</div>
+<div class="row">
+  <input type="submit" class="submit button primary" value="Submit" />
+  <%= link_to 'Cancel', account_transactions_path(params['account_id']), class: "cancel button secondary" %>
+</div>
+<% end %>

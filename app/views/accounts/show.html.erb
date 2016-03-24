@@ -16,6 +16,10 @@
         </div>
         <div class="transaction-actions">
             <a href="#" class="button general fa fa-plus-circle new-transaction">New Transaction</a>
+            <a href="#" class="button general transaction-dropdown">▼</a>
+            <ul class="collapsed">
+                <%= link_to "Bulk Transaction - CSV", account_transactions_bulk_csv_path(@account),  class: "general bulk-transaction" %>
+            </ul>
         </div>
     </div>
     <div class="transactions-wrapper">
