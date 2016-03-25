@@ -1,5 +1,5 @@
 <h3>High and Low Months</h3>
-<% if account.transactions.count > 0 %>
+<% if account.future_transactions.count > 0 %>
 <div class="row min">
     <%= link_to account.min_review.date.strftime('%b %Y') + ':',
         account_review_path(account.id, account.min_review.month, account.min_review.year) %>
