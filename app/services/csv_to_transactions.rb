@@ -32,8 +32,9 @@ class CSVToTransactions
 private
   def verify_date
     @current_row['date'] = nil unless @current_row['date']
+
     begin
-      date = Date.parse(@current_row['date'])
+      date = Date.strptime(@current_row['date'], '%m/%d/%Y')
       @current_row['date'] = date.strftime('%m/%d/%Y')
     rescue
       @current_row['date'] = nil
@@ -76,8 +77,13 @@ private
   def verify_categories
     if cur_categories =~ /;/
       @current_row['categories'] = cur_categories.split(';')
+
     elsif cur_categories =~ /,/
       @current_row['categories'] = cur_categories.split(',')
+
+    elsif cur_categories.nil? || cur_categories.try(:empty?)
+      @current_row['categories'] = []
+
     else
       @current_row['categories'] = [cur_categories]
     end

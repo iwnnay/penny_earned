@@ -1,11 +1,11 @@
 date,AMount,state,description,debit,categories
-3/19/2016,20,paid,Magazine subscription,TRUE,"entertainment!, gifts"
+3/1/2016,20,paid,Magazine subscription,TRUE,"entertainment!, gifts"
 ,invalid_amount,paid,Gift for best friend,FALSE,gifts;friends@@
 Canada,,paid,Gift for best friend,Credit,gifts; best!!!!         FRIENDS
-3/19/2016,-$20,pending,Magazine subscription,,entertainment
-3/19/2016,-20,paid,Magazine subscription,,entertainment
-3/19/2016,$20,pending,Magazine subscription,,entertainment
-3/19/2016,$20,,Magazine subscription,,entertainment
-3/19/2016,$20,INVALID_STATE,Magazine subscription,,entertainment
-3/19/2016,20,paid,Magazine subscription,DEBIT,entertainment
+3/11/2016,-$20,pending,Magazine subscription,,entertainment
+3/12/2016,-20,paid,Magazine subscription,,entertainment
+3/20/2016,$20,pending,Magazine subscription,,entertainment
+3/21/2016,$20,,Magazine subscription,,entertainment
+3/22/2016,$20,INVALID_STATE,Magazine subscription,,entertainment
+3/23/2016,20,paid,Magazine subscription,DEBIT,
 3/19/2016,20,paid,Maga-zine   !!!@ *subscription,Credit,entertainment

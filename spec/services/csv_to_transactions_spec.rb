@@ -26,6 +26,7 @@ RSpec.describe CSVToTransactions do
       comma_and_space: 0,
       semicolon: 1,
       spaced_category: 2,
+      nil_category: 8,
       obnoxious_description: 9
     }
   end
