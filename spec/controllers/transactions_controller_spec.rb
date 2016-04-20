@@ -205,5 +205,39 @@ RSpec.describe TransactionsController, :type => :controller do
   end
 
   describe 'bulk_transaction' do
+    before(:each) do
+      @account = FactoryGirl.create(:account, starting_date: Date.new(2016,3,1))
+      sign_in :user, @account.user
+    end
+
+    it 'should redirect to account on success' do
+      file = fixture_file_upload('valid_minimum.csv', 'text/csv')
+      post :bulk_csv, account_id: @account.id, csv_file: file
+
+      expect(subject).to redirect_to(account_path(@account))
+    end
+
+    it 'should insert the minimum record' do
+      file = fixture_file_upload('valid_minimum.csv', 'text/csv')
+      post :bulk_csv, account_id: @account.id, csv_file: file
+
+      expect(Transaction.count).to eq(1)
+      expect(Transaction.first.amount).to eq(20)
+      expect(Transaction.first.date).to eq(Date.strptime('03/22/2016', '%m/%d/%Y'))
+    end
+
+    it 'should insert the maximum record' do
+      file = fixture_file_upload('valid_maximum.csv', 'text/csv')
+      post :bulk_csv, account_id: @account.id, csv_file: file
+
+      expect(subject).to redirect_to(account_path(@account))
+    end
+
+    it 'should return errors in a csv with the error in it' do
+      file = fixture_file_upload('error.csv', 'text/csv')
+      post :bulk_csv, account_id: @account.id, csv_file: file
+
+      expect(response.body).to include('Amount can\'t be blank')
+    end
   end
 end

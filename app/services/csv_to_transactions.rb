@@ -31,11 +31,13 @@ class CSVToTransactions
 
 private
   def verify_date
-    @current_row['date'] = nil unless @current_row['date']
+    return if @current_row['date'].nil?
 
     begin
-      date = Date.strptime(@current_row['date'], '%m/%d/%Y')
-      @current_row['date'] = date.strftime('%m/%d/%Y')
+      date = cur_date.split('/')
+      date = Date.new(date[2].to_i, date[0].to_i, date[1].to_i)
+      date = date.strftime('%Y-%m-%d')
+      @current_row['date'] = date
     rescue
       @current_row['date'] = nil
     end
@@ -59,12 +61,13 @@ private
   end
 
   def verify_state
-    @current_row['state'] = nil unless Transaction::STATES.include? cur_state
-    @current_row['state'] = Transaction::STATES[0] if cur_state.nil?
+    state = cur_state.try(:downcase)
+    state = nil unless Transaction::STATES.include? state
+    @current_row['state'] = state || Transaction::STATES[0]
   end
 
   def verify_debit
-    return if [true, false].include? cur_debit
+    return if [true, false].include? cur_debit || cur_debit.nil?
 
 
     if ['credit', 'false'].include? cur_debit.downcase
@@ -98,6 +101,8 @@ private
   end
 
   def verify_description
+    return if cur_description.nil?
+
     @current_row['description'] = saniwipe cur_description
   end
 

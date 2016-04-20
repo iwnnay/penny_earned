@@ -16,12 +16,13 @@ class BulkTransaction
 
       transaction.delete('categories')
 
-      transaction = Transaction.new(transaction)
-      transaction.update_categories categories if transaction.save
+      record = Transaction.new(transaction)
+      record.update_categories categories if record.save
 
-      unless transaction.save
-        errored << transaction.attributes
-          .merge(errors: transaction.errors.messages)
+      unless record.save
+        transaction.delete('account')
+        errored << transaction
+          .merge(errors: "#{record.errors.full_messages.join(',')}")
       end
     end
 

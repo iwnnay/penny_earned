@@ -68,8 +68,9 @@ class TransactionsController < ApplicationController
     if bulk === true
       redirect_to account_path(params['account_id'])
     else
-      csv = CSV.new(bulk)
-      send_data csv, filename: "errors-#{Time.new.strftime('%s')}.csv"
+      send_data TransactionsArrayToCSV.parse(bulk),
+        type: 'text/csv; charset=utf-8; header=present',
+        disposition: "attachment; filename=errors-#{Time.new.strftime('%s')}.csv"
     end
   end
 

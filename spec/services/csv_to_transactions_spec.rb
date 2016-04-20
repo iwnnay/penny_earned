@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe CSVToTransactions do
 
-  let(:file) { File.open("spec/resources/csv/example_penny.csv") }
+  let(:file) { File.open("spec/fixtures/example_penny.csv") }
 
   let(:key) do
     {
@@ -18,6 +18,7 @@ RSpec.describe CSVToTransactions do
       state_paid: 0,
       state_pending: 3,
       invalid_state: 7,
+      case_insensitive_state: 8,
       debit_true: 0,
       debit_false: 1,
       debit_credit: 9,
@@ -37,6 +38,12 @@ RSpec.describe CSVToTransactions do
   end
 
   describe ':parse' do
+    it 'should parse the minimum values successfully' do
+      expect do
+        described_class.parse(File.open('spec/fixtures/valid_minimum.csv'))
+      end.to_not raise_error
+    end
+
     it 'should set date to nil if its missing' do
       expect(line(:missing_date)['date']).to eq(nil)
     end
@@ -75,6 +82,11 @@ RSpec.describe CSVToTransactions do
     it 'should default the state to placeholder' do
       expect(line(:no_state)['state']).to eq('placeholder')
       expect(line(:invalid_state)['state']).to eq('placeholder')
+    end
+
+    it 'should render states case insensitive' do
+      expect(line(:case_insensitive_state)['state']).to eq('paid')
+
     end
 
     it 'should assume true for debit means true' do
