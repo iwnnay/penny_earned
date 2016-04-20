@@ -19,8 +19,6 @@ RSpec.describe Category, :type => :model do
       expect do
         category = build(:category)
         category = Category.find_or_create(category.attributes)
-
-        expect(category).to be_a(Category)
       end.to change(Category, :count).by(1)
     end
 
