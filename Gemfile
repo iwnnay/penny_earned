@@ -25,7 +25,7 @@ end
 # gem 'debugger', group: [:development, :test]
 #
 group :development do
-  gem 'capistrano',  '~> 3.1'
+  gem 'capistrano'
   gem 'capistrano-rails', '~> 1.1'
   gem 'capistrano-passenger', '~> 0.0.1'
 end
@@ -38,4 +38,8 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'factory_girl'
   gem 'simplecov', '~> 0.8.2'
+end
+
+group :production do
+  gem "therubyracer"
 end
