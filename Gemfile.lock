@@ -257,6 +257,7 @@ DEPENDENCIES
   compass-rails (~> 2.0.2)
   d3-rails (~> 3.5.2)
   devise
+  execjs
   factory_girl
   font-awesome-rails (~> 4.2)
   guard
