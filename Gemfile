@@ -40,7 +40,5 @@ group :development, :test do
   gem 'simplecov', '~> 0.8.2'
 end
 
-group :production do
-  gem 'execjs'
-  gem "therubyracer", :platforms => :ruby
-end
+gem 'execjs'
+gem "therubyracer", :platforms => :ruby
