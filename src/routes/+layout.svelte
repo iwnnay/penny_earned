@@ -1,4 +1,5 @@
 <script>
+    import '../app.css';
     import favicon from '$lib/assets/favicon.svg';
 
     /** @type {{ data: import('./$types').LayoutData, children: import('svelte').Snippet }} */
@@ -27,13 +28,13 @@
         align-items: center;
         gap: 1rem;
         padding: 0.75rem 1.5rem;
-        background: #111f30;
-        color: #c5d8e8;
-        border-bottom: 1px solid #1c3348;
+        background: var(--bg-surface);
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border-main);
     }
 
     nav a {
-        color: #4a82a8;
+        color: var(--primary);
         text-decoration: none;
         font-weight: 500;
     }
@@ -45,13 +46,13 @@
     .user {
         margin-left: auto;
         font-size: 0.875rem;
-        color: #7a9ab5;
+        color: var(--text-muted);
     }
 
     nav button {
         background: none;
-        border: 1px solid #2e5270;
-        color: #a0bcd0;
+        border: 1px solid var(--border-button);
+        color: var(--text-main); /* Adjusted from #a0bcd0 to var(--text-main) for consistency, or keep if it's meant to be different */
         padding: 0.25rem 0.75rem;
         border-radius: 4px;
         cursor: pointer;
@@ -59,14 +60,14 @@
     }
 
     nav button:hover {
-        background: #1c3348;
+        background: var(--border-main);
     }
 
     :global(body) {
         margin: 0;
         font-family: system-ui, sans-serif;
-        background: #0d1824;
-        color: #c5d8e8;
+        background: var(--bg-main);
+        color: var(--text-main);
     }
 
     :global(*, *::before, *::after) {

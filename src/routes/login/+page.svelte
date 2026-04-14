@@ -34,7 +34,7 @@
     h1 {
         margin: 0;
         font-size: 2rem;
-        color: #4a82a8;
+        color: var(--primary);
     }
 
     form {
@@ -43,10 +43,10 @@
         gap: 1rem;
         width: 100%;
         max-width: 360px;
-        background: #111f30;
+        background: var(--bg-surface);
         padding: 2rem;
         border-radius: 8px;
-        border: 1px solid #1c3348;
+        border: 1px solid var(--border-main);
     }
 
     label {
@@ -54,27 +54,27 @@
         flex-direction: column;
         gap: 0.25rem;
         font-size: 0.875rem;
-        color: #7a9ab5;
+        color: var(--text-muted);
     }
 
     input {
         padding: 0.5rem 0.75rem;
-        background: #0d1824;
-        border: 1px solid #274560;
+        background: var(--bg-input);
+        border: 1px solid var(--border-input);
         border-radius: 4px;
-        color: #c5d8e8;
+        color: var(--text-main);
         font-size: 1rem;
     }
 
     input:focus {
         outline: none;
-        border-color: #4a82a8;
+        border-color: var(--primary);
     }
 
     button {
         padding: 0.6rem;
-        background: #4a82a8;
-        color: #0d1824;
+        background: var(--primary);
+        color: var(--text-inverse);
         border: none;
         border-radius: 4px;
         font-size: 1rem;
@@ -83,11 +83,11 @@
     }
 
     button:hover {
-        background: #5e9ac0;
+        background: var(--primary-hover);
     }
 
     .error {
-        color: #a85860;
+        color: var(--danger);
         margin: 0;
         font-size: 0.875rem;
     }
