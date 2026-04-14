@@ -76,6 +76,47 @@ export function ensureHorizonForAccount(accountId, neededHorizon) {
 }
 
 /**
+ * Returns the minimum and maximum end-of-month balance from the given month
+ * through the horizon, along with the YYYY-MM they occur in.
+ * "End-of-month balance" = the total on the last transaction of each month.
+ * Returns null if there are no transactions from that point forward.
+ * @param {number} accountId
+ * @param {string} fromYearMonth  YYYY-MM
+ * @returns {{ min: { total: number, month: string }, max: { total: number, month: string } } | null}
+ */
+export function getBalanceExtremes(accountId, fromYearMonth) {
+    const db = getDb();
+    const fromDate = fromYearMonth + '-01';
+
+    // For each calendar month, find the last transaction (highest order) then sort by total.
+    const rows = db
+        .prepare(
+            `WITH last_per_month AS (
+                SELECT substr(date, 1, 7) AS ym, MAX("order") AS max_ord
+                FROM transactions
+                WHERE account_id = ? AND date >= ?
+                GROUP BY ym
+            )
+            SELECT t.date, t.total
+            FROM transactions t
+            JOIN last_per_month lpm ON t."order" = lpm.max_ord AND t.account_id = ?
+            ORDER BY t.total ASC`
+        )
+        .all(accountId, fromDate, accountId);
+
+    if (rows.length === 0) {
+        return null;
+    }
+
+    const minRow = rows[0];
+    const maxRow = rows[rows.length - 1];
+    return {
+        min: { total: minRow.total, month: minRow.date.slice(0, 7) },
+        max: { total: maxRow.total, month: maxRow.date.slice(0, 7) },
+    };
+}
+
+/**
  * @param {number} accountId
  * @param {number} year
  * @param {number} month  1-based

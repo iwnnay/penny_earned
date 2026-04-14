@@ -3,6 +3,7 @@
     import { formatCurrency, formatDate } from '$lib/shared/formatters.js';
     import DatePicker from '$lib/components/DatePicker.svelte';
     import CategoryInput from '$lib/components/CategoryInput.svelte';
+    import PieChart from '$lib/components/PieChart.svelte';
 
     /** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
     let { data, form } = $props();
@@ -23,6 +24,26 @@
     let isRecurring = $state(false);
     let editingId = $state(/** @type {number | null} */ (null));
     let showMonthPicker = $state(false);
+
+    /**
+     * Category breakdown for the pie chart: withdrawals only, grouped by main category name.
+     */
+    const categoryBreakdown = $derived((() => {
+        /** @type {Record<string, number>} */
+        const totals = {};
+        for (const tx of data.transactions) {
+            if (tx.debit) { continue; } // skip credits/income
+            const cats = data.transactionCategories[tx.transaction_id]?.categories ?? [];
+            const mainCat = cats.find(c => c.is_main);
+            const label = mainCat?.name ?? 'Misc';
+            totals[label] = (totals[label] ?? 0) + tx.amount;
+        }
+        return Object.entries(totals)
+            .map(([label, amount]) => ({ label, amount }))
+            .sort((a, b) => b.amount - a.amount);
+    })());
+
+    const breakdownTotal = $derived(categoryBreakdown.reduce((s, seg) => s + seg.amount, 0));
 
     /** YYYY-MM of the currently viewed month */
     const currentMonthStr = $derived(`${data.year}-${String(data.month).padStart(2, '0')}`);
@@ -144,6 +165,23 @@
 
     <div class="toolbar">
         <span class="tx-count">{data.transactions.length} transaction{data.transactions.length !== 1 ? 's' : ''}</span>
+        {#if data.balanceExtremes}
+            {@const ext = data.balanceExtremes}
+            {@const minYear = parseInt(ext.min.month.split('-')[0])}
+            {@const minMonth = parseInt(ext.min.month.split('-')[1])}
+            {@const maxYear = parseInt(ext.max.month.split('-')[0])}
+            {@const maxMonth = parseInt(ext.max.month.split('-')[1])}
+            <div class="extremes">
+                <a href="?year={minYear}&month={minMonth}" class="extreme-link extreme-min" title="Lowest balance: {MONTHS[minMonth - 1]} {minYear}">
+                    <span class="extreme-label">Min</span>
+                    <span class="extreme-value neg">{formatCurrency(ext.min.total)}</span>
+                </a>
+                <a href="?year={maxYear}&month={maxMonth}" class="extreme-link extreme-max" title="Highest balance: {MONTHS[maxMonth - 1]} {maxYear}">
+                    <span class="extreme-label">Max</span>
+                    <span class="extreme-value pos">{formatCurrency(ext.max.total)}</span>
+                </a>
+            </div>
+        {/if}
         <button onclick={() => { showAddForm = !showAddForm; editingId = null; }} class="btn-outline btn-sm">
             {showAddForm ? 'Cancel' : '+ Add Transaction'}
         </button>
@@ -372,6 +410,11 @@
             </table>
         </div>
     {/if}
+
+    <section class="card breakdown-card">
+        <h2>Expense Breakdown</h2>
+        <PieChart segments={categoryBreakdown} total={breakdownTotal} />
+    </section>
 </main>
 
 <style>
@@ -540,13 +583,51 @@
     .toolbar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 0;
         margin-bottom: 1rem;
     }
 
     .tx-count {
         font-size: 0.85rem;
         color: var(--text-muted);
+        flex: 1;
+    }
+
+    .extremes {
+        display: flex;
+        gap: 1rem;
+        margin-right: 0.75rem;
+    }
+
+    .extreme-link {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        text-decoration: none;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        transition: border-color 0.1s, background 0.1s;
+    }
+
+    .extreme-link:hover {
+        background: var(--bg-surface-alt);
+        border-color: var(--border-main);
+    }
+
+    .extreme-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+    }
+
+    .extreme-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.3;
     }
 
     .card {
@@ -877,5 +958,9 @@
         display: flex;
         gap: 0.25rem;
         justify-content: flex-end;
+    }
+
+    .breakdown-card {
+        margin-top: 2rem;
     }
 </style>

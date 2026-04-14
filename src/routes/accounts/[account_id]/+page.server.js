@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { getAccount } from '$lib/server/accounts.js';
-import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries, getNeededHorizon, ensureHorizonForAccount } from '$lib/server/transactions.js';
+import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries, getNeededHorizon, ensureHorizonForAccount, getBalanceExtremes } from '$lib/server/transactions.js';
 import { getMainCategories, getSubcategories, ensureCategory, getCategoriesForTransactions } from '$lib/server/categories.js';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -38,15 +38,19 @@ export function load({ locals, params, url, cookies }) {
     const subcategories = getSubcategories(accountId);
     const transactionCategories = getCategoriesForTransactions(transactions.map((t) => t.transaction_id));
 
-    return { 
-        account, 
-        transactions, 
-        year, 
-        month, 
+    const currentMonthStr = `${year}-${String(month).padStart(2, '0')}`;
+    const balanceExtremes = getBalanceExtremes(accountId, currentMonthStr);
+
+    return {
+        account,
+        transactions,
+        year,
+        month,
         horizon: neededHorizon,
         mainCategories,
         subcategories,
-        transactionCategories
+        transactionCategories,
+        balanceExtremes,
     };
 }
 
