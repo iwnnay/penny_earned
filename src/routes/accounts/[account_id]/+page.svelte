@@ -68,7 +68,10 @@
     </div>
 
     <div class="month-nav">
-        <a href={prevMonth()} class="nav-btn">&larr;</a>
+        <div class="nav-btn-group">
+            <a href={prevMonth()} class="nav-btn">&larr;</a>
+            <a href="?" class="nav-btn nav-btn-today" title="Go to current month">&#x25BE;</a>
+        </div>
         <span class="month-label">{MONTHS[data.month - 1]} {data.year}</span>
         <a href={nextMonth()} class="nav-btn">&rarr;</a>
     </div>
@@ -321,6 +324,27 @@
         align-items: center;
         gap: 1rem;
         margin-bottom: 1.25rem;
+    }
+
+    .nav-btn-group {
+        display: flex;
+    }
+
+    .nav-btn-group .nav-btn:first-child {
+        border-right: none;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .nav-btn-group .nav-btn:last-child {
+        border-radius: 0 4px 4px 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        font-size: 0.75rem;
+        color: #888;
+    }
+
+    .nav-btn-group .nav-btn:last-child:hover {
+        color: #7eb8f7;
     }
 
     .nav-btn {
