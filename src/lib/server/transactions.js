@@ -261,20 +261,18 @@ export function deleteTransaction(transactionId) {
 }
 
 /**
- * Deletes all transactions in a recurring series and recalculates.
+ * Deletes the given transaction and all future transactions in the same recurring series
+ * (date >= fromDate), then recalculates from that month forward.
+ * Past occurrences are left untouched.
  * @param {string} seriesId
  * @param {number} accountId
+ * @param {string} fromDate  YYYY-MM-DD — the date of the clicked transaction
  */
-export function deleteRecurringSeries(seriesId, accountId) {
+export function deleteRecurringSeries(seriesId, accountId, fromDate) {
     const db = getDb();
-    const first = db
-        .prepare("SELECT date FROM transactions WHERE series = ? AND account_id = ? ORDER BY date ASC LIMIT 1")
-        .get(seriesId, accountId);
-    db.prepare('DELETE FROM transactions WHERE series = ? AND account_id = ?').run(seriesId, accountId);
-    if (first) {
-        const [year, month] = first.date.split('-').map(Number);
-        recalculateFromMonth(accountId, year, month);
-    }
+    db.prepare('DELETE FROM transactions WHERE series = ? AND account_id = ? AND date >= ?').run(seriesId, accountId, fromDate);
+    const [year, month] = fromDate.split('-').map(Number);
+    recalculateFromMonth(accountId, year, month);
 }
 
 /**

@@ -39,7 +39,7 @@ export async function DELETE({ request, locals, params }) {
 
     const body = await request.json().catch(() => ({}));
     if (body.delete_series && tx.series) {
-        deleteRecurringSeries(tx.series, tx.account_id);
+        deleteRecurringSeries(tx.series, tx.account_id, tx.date);
     } else {
         deleteTransaction(transactionId);
     }

@@ -101,9 +101,10 @@ export const actions = {
         const transaction_id = parseInt(String(form.get('transaction_id') ?? ''));
         const delete_series = form.get('delete_series') === 'true';
         const series = String(form.get('series') ?? '') || null;
+        const date = String(form.get('date') ?? '');
 
-        if (delete_series && series) {
-            deleteRecurringSeries(series, accountId);
+        if (delete_series && series && date) {
+            deleteRecurringSeries(series, accountId, date);
         } else if (transaction_id) {
             deleteTransaction(transaction_id);
         }

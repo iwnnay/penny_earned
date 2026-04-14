@@ -217,6 +217,7 @@
                                     <form method="POST" action="?/delete" use:enhance>
                                         <input type="hidden" name="transaction_id" value={tx.transaction_id} />
                                         <input type="hidden" name="series" value={tx.series ?? ''} />
+                                        <input type="hidden" name="date" value={tx.date} />
                                         {#if tx.series}
                                             <div class="delete-group">
                                                 <button
