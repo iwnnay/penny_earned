@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { getAccount } from '$lib/server/accounts.js';
-import { getTransactionsForMonth, createTransaction, createRecurringSeries, deleteTransaction, deleteRecurringSeries } from '$lib/server/transactions.js';
+import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries } from '$lib/server/transactions.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals, params, url }) {
@@ -51,6 +51,37 @@ export const actions = {
             createRecurringSeries({ account_id: accountId, name, amount, debit, date, recurring_frequency });
         } else {
             createTransaction({ account_id: accountId, name, amount, debit, date });
+        }
+
+        return { success: true };
+    },
+
+    update: async ({ request, locals, params }) => {
+        if (!locals.user) {
+            redirect(302, '/login');
+        }
+        const accountId = parseInt(params.account_id);
+        const account = getAccount(accountId, locals.user.user_id);
+        if (!account) {
+            return fail(403, { error: 'Account not found.' });
+        }
+
+        const form = await request.formData();
+        const transaction_id = parseInt(String(form.get('transaction_id') ?? ''));
+        const name = String(form.get('name') ?? '').trim();
+        const amount = parseFloat(String(form.get('amount') ?? '0'));
+        const debit = form.get('debit') === 'true';
+        const date = String(form.get('date') ?? '');
+        const update_future = form.get('update_future') === 'true';
+
+        if (!transaction_id || !name || !date || isNaN(amount) || amount <= 0) {
+            return fail(400, { error: 'Name, valid amount, and date are required.' });
+        }
+
+        if (update_future) {
+            updateTransactionAndFuture(transaction_id, { name, amount, debit, date });
+        } else {
+            updateTransaction(transaction_id, { name, amount, debit, date });
         }
 
         return { success: true };

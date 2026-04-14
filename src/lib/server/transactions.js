@@ -191,6 +191,61 @@ export function createRecurringSeries(data) {
 }
 
 /**
+ * Updates a single transaction and recalculates from the earliest affected month.
+ * @param {number} transactionId
+ * @param {{ name: string, amount: number, debit: boolean, date: string }} data
+ */
+export function updateTransaction(transactionId, data) {
+    const db = getDb();
+    const old = db.prepare('SELECT account_id, date FROM transactions WHERE transaction_id = ?').get(transactionId);
+    if (!old) {
+        return;
+    }
+    db.prepare('UPDATE transactions SET name = ?, amount = ?, debit = ?, date = ? WHERE transaction_id = ?').run(
+        data.name,
+        data.amount,
+        data.debit ? 1 : 0,
+        data.date,
+        transactionId
+    );
+    // Recalculate from whichever month is earlier — old date or new date
+    const earliest = old.date < data.date ? old.date : data.date;
+    const [year, month] = earliest.split('-').map(Number);
+    recalculateFromMonth(old.account_id, year, month);
+}
+
+/**
+ * Updates this transaction and all future transactions in the same recurring series
+ * (same series UUID, date >= this transaction's original date).
+ * Future occurrences keep their own dates; only name, amount, and debit are propagated.
+ * @param {number} transactionId
+ * @param {{ name: string, amount: number, debit: boolean, date: string }} data
+ */
+export function updateTransactionAndFuture(transactionId, data) {
+    const db = getDb();
+    const old = db.prepare('SELECT account_id, date, series FROM transactions WHERE transaction_id = ?').get(transactionId);
+    if (!old) {
+        return;
+    }
+
+    const updateThis = db.prepare('UPDATE transactions SET name = ?, amount = ?, debit = ?, date = ? WHERE transaction_id = ?');
+    const updateFuture = db.prepare(
+        'UPDATE transactions SET name = ?, amount = ?, debit = ? WHERE series = ? AND account_id = ? AND date > ? AND transaction_id != ?'
+    );
+
+    db.transaction(() => {
+        updateThis.run(data.name, data.amount, data.debit ? 1 : 0, data.date, transactionId);
+        if (old.series) {
+            updateFuture.run(data.name, data.amount, data.debit ? 1 : 0, old.series, old.account_id, old.date, transactionId);
+        }
+    })();
+
+    const earliest = old.date < data.date ? old.date : data.date;
+    const [year, month] = earliest.split('-').map(Number);
+    recalculateFromMonth(old.account_id, year, month);
+}
+
+/**
  * Deletes a single transaction and recalculates from that month forward.
  * @param {number} transactionId
  */

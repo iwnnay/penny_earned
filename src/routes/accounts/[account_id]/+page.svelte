@@ -10,11 +10,13 @@
 
     let showAddForm = $state(false);
     let isRecurring = $state(false);
+    let editingId = $state(/** @type {number | null} */ (null));
 
     $effect(() => {
         if (form?.success) {
             showAddForm = false;
             isRecurring = false;
+            editingId = null;
         }
     });
 
@@ -36,6 +38,12 @@
             y++;
         }
         return `?year=${y}&month=${m}`;
+    }
+
+    /** @param {number} id */
+    function startEdit(id) {
+        editingId = id;
+        showAddForm = false;
     }
 </script>
 
@@ -61,7 +69,7 @@
 
     <div class="toolbar">
         <span class="tx-count">{data.transactions.length} transaction{data.transactions.length !== 1 ? 's' : ''}</span>
-        <button onclick={() => (showAddForm = !showAddForm)} class="btn-outline btn-sm">
+        <button onclick={() => { showAddForm = !showAddForm; editingId = null; }} class="btn-outline btn-sm">
             {showAddForm ? 'Cancel' : '+ Add Transaction'}
         </button>
     </div>
@@ -139,61 +147,109 @@
                 </thead>
                 <tbody>
                     {#each data.transactions as tx (tx.transaction_id)}
-                        <tr class:debit={tx.debit} class:withdrawal={!tx.debit}>
-                            <td class="col-order muted">{tx.order}</td>
-                            <td>{formatDate(tx.date)}</td>
-                            <td>
-                                {tx.name}
-                                {#if tx.series}
-                                    <span class="recurring-badge" title="Recurring">↺</span>
-                                {/if}
-                            </td>
-                            <td class="col-right amount">
-                                {#if tx.debit}
-                                    <span class="pos">+{formatCurrency(tx.amount)}</span>
-                                {:else}
-                                    <span class="neg">-{formatCurrency(tx.amount)}</span>
-                                {/if}
-                            </td>
-                            <td class="col-right total">
-                                <span class={tx.total >= 0 ? 'pos' : 'neg'}>{formatCurrency(tx.total)}</span>
-                            </td>
-                            <td class="col-actions">
-                                <form method="POST" action="?/delete" use:enhance>
-                                    <input type="hidden" name="transaction_id" value={tx.transaction_id} />
-                                    <input type="hidden" name="series" value={tx.series ?? ''} />
+                        {#if editingId === tx.transaction_id}
+                            <tr class="editing-row">
+                                <td colspan="6" class="edit-cell">
+                                    <form method="POST" action="?/update" use:enhance class="inline-edit-form">
+                                        <input type="hidden" name="transaction_id" value={tx.transaction_id} />
+                                        <div class="inline-edit-fields">
+                                            <label>
+                                                Name
+                                                <input type="text" name="name" value={tx.name} required />
+                                            </label>
+                                            <label>
+                                                Amount
+                                                <input type="number" name="amount" step="0.01" min="0.01" value={tx.amount} required />
+                                            </label>
+                                            <label>
+                                                Date
+                                                <input type="date" name="date" value={tx.date} required />
+                                            </label>
+                                            <label class="type-row">
+                                                <span>Type</span>
+                                                <div class="radio-group">
+                                                    <label class="radio">
+                                                        <input type="radio" name="debit" value="true" checked={!!tx.debit} /> Debit
+                                                    </label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="debit" value="false" checked={!tx.debit} /> Withdrawal
+                                                    </label>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" name="update_future" value="false" class="btn-primary btn-sm">Save</button>
+                                            {#if tx.series}
+                                                <button
+                                                    type="submit"
+                                                    name="update_future"
+                                                    value="true"
+                                                    class="btn-save-plus btn-sm"
+                                                    title="Adjust this and future transactions"
+                                                >Save+</button>
+                                            {/if}
+                                            <button type="button" onclick={() => (editingId = null)} class="btn-outline btn-sm">Cancel</button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        {:else}
+                            <tr class="data-row" onclick={() => startEdit(tx.transaction_id)}>
+                                <td class="col-order muted">{tx.order}</td>
+                                <td>{formatDate(tx.date)}</td>
+                                <td>
+                                    {tx.name}
                                     {#if tx.series}
-                                        <div class="delete-group">
+                                        <span class="recurring-badge" title="Recurring">↺</span>
+                                    {/if}
+                                </td>
+                                <td class="col-right amount">
+                                    {#if tx.debit}
+                                        <span class="pos">+{formatCurrency(tx.amount)}</span>
+                                    {:else}
+                                        <span class="neg">-{formatCurrency(tx.amount)}</span>
+                                    {/if}
+                                </td>
+                                <td class="col-right total">
+                                    <span class={tx.total >= 0 ? 'pos' : 'neg'}>{formatCurrency(tx.total)}</span>
+                                </td>
+                                <td class="col-actions" onclick={(e) => e.stopPropagation()}>
+                                    <form method="POST" action="?/delete" use:enhance>
+                                        <input type="hidden" name="transaction_id" value={tx.transaction_id} />
+                                        <input type="hidden" name="series" value={tx.series ?? ''} />
+                                        {#if tx.series}
+                                            <div class="delete-group">
+                                                <button
+                                                    type="submit"
+                                                    name="delete_series"
+                                                    value="false"
+                                                    class="btn-icon"
+                                                    title="Delete this occurrence"
+                                                    onclick={(e) => { if (!confirm('Delete this occurrence?')) { e.preventDefault(); } }}
+                                                >✕</button>
+                                                <button
+                                                    type="submit"
+                                                    name="delete_series"
+                                                    value="true"
+                                                    class="btn-icon btn-icon-warn"
+                                                    title="Delete entire series"
+                                                    onclick={(e) => { if (!confirm('Delete the entire recurring series?')) { e.preventDefault(); } }}
+                                                >↺✕</button>
+                                            </div>
+                                        {:else}
                                             <button
                                                 type="submit"
                                                 name="delete_series"
                                                 value="false"
                                                 class="btn-icon"
-                                                title="Delete this occurrence"
-                                                onclick={(e) => { if (!confirm('Delete this occurrence?')) { e.preventDefault(); } }}
+                                                title="Delete transaction"
+                                                onclick={(e) => { if (!confirm('Delete this transaction?')) { e.preventDefault(); } }}
                                             >✕</button>
-                                            <button
-                                                type="submit"
-                                                name="delete_series"
-                                                value="true"
-                                                class="btn-icon btn-icon-warn"
-                                                title="Delete entire series"
-                                                onclick={(e) => { if (!confirm('Delete the entire recurring series?')) { e.preventDefault(); } }}
-                                            >↺✕</button>
-                                        </div>
-                                    {:else}
-                                        <button
-                                            type="submit"
-                                            name="delete_series"
-                                            value="false"
-                                            class="btn-icon"
-                                            title="Delete transaction"
-                                            onclick={(e) => { if (!confirm('Delete this transaction?')) { e.preventDefault(); } }}
-                                        >✕</button>
-                                    {/if}
-                                </form>
-                            </td>
-                        </tr>
+                                        {/if}
+                                    </form>
+                                </td>
+                            </tr>
+                        {/if}
                     {/each}
                 </tbody>
             </table>
@@ -365,6 +421,7 @@
     .form-actions {
         display: flex;
         gap: 0.75rem;
+        align-items: center;
     }
 
     .table-wrap {
@@ -396,8 +453,39 @@
         border-bottom: none;
     }
 
-    tr:hover td {
+    .data-row {
+        cursor: pointer;
+    }
+
+    .data-row:hover td {
         background: #1a1a2e;
+    }
+
+    .editing-row td {
+        background: #12122a;
+        border-bottom: 1px solid #444;
+        padding: 0;
+    }
+
+    .editing-row:last-child td {
+        border-bottom: none;
+    }
+
+    .edit-cell {
+        padding: 1rem 0.75rem !important;
+    }
+
+    .inline-edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .inline-edit-fields {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 2fr;
+        gap: 0.75rem;
+        align-items: start;
     }
 
     .col-order {
@@ -465,6 +553,21 @@
 
     .btn-primary:hover {
         background: #9ecbff;
+    }
+
+    .btn-save-plus {
+        padding: 0.5rem 1.25rem;
+        background: #4a7a5a;
+        color: #d4f0dd;
+        border: 1px solid #5a9a6a;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-save-plus:hover {
+        background: #5a9a6a;
     }
 
     .btn-outline {
