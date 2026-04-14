@@ -27,3 +27,4 @@ plans/
 *.db
 *.db-shm
 *.db-wal
+.idea/

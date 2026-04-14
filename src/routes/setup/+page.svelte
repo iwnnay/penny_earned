@@ -39,12 +39,12 @@
     h1 {
         margin: 0;
         font-size: 2rem;
-        color: #7eb8f7;
+        color: #4a82a8;
     }
 
     .subtitle {
         margin: 0;
-        color: #888;
+        color: #7a9ab5;
         font-size: 0.875rem;
     }
 
@@ -54,10 +54,10 @@
         gap: 1rem;
         width: 100%;
         max-width: 360px;
-        background: #1a1a2e;
+        background: #111f30;
         padding: 2rem;
         border-radius: 8px;
-        border: 1px solid #333;
+        border: 1px solid #1c3348;
     }
 
     label {
@@ -65,27 +65,27 @@
         flex-direction: column;
         gap: 0.25rem;
         font-size: 0.875rem;
-        color: #aaa;
+        color: #7a9ab5;
     }
 
     input {
         padding: 0.5rem 0.75rem;
-        background: #0f0f1a;
-        border: 1px solid #444;
+        background: #0d1824;
+        border: 1px solid #274560;
         border-radius: 4px;
-        color: #e0e0e0;
+        color: #c5d8e8;
         font-size: 1rem;
     }
 
     input:focus {
         outline: none;
-        border-color: #7eb8f7;
+        border-color: #4a82a8;
     }
 
     button {
         padding: 0.6rem;
-        background: #7eb8f7;
-        color: #0f0f1a;
+        background: #4a82a8;
+        color: #0d1824;
         border: none;
         border-radius: 4px;
         font-size: 1rem;
@@ -94,11 +94,11 @@
     }
 
     button:hover {
-        background: #9ecbff;
+        background: #5e9ac0;
     }
 
     .error {
-        color: #f87171;
+        color: #a85860;
         margin: 0;
         font-size: 0.875rem;
     }

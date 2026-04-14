@@ -175,7 +175,7 @@
     }
 
     h2 a {
-        color: #7eb8f7;
+        color: #4a82a8;
         text-decoration: none;
     }
 
@@ -184,8 +184,8 @@
     }
 
     .card {
-        background: #1a1a2e;
-        border: 1px solid #333;
+        background: #111f30;
+        border: 1px solid #1c3348;
         border-radius: 8px;
         padding: 1.5rem;
     }
@@ -210,23 +210,23 @@
         flex-direction: column;
         gap: 0.25rem;
         font-size: 0.875rem;
-        color: #aaa;
+        color: #7a9ab5;
     }
 
     input,
     select {
         padding: 0.5rem 0.75rem;
-        background: #0f0f1a;
-        border: 1px solid #444;
+        background: #0d1824;
+        border: 1px solid #274560;
         border-radius: 4px;
-        color: #e0e0e0;
+        color: #c5d8e8;
         font-size: 0.95rem;
     }
 
     input:focus,
     select:focus {
         outline: none;
-        border-color: #7eb8f7;
+        border-color: #4a82a8;
     }
 
     .form-actions {
@@ -255,10 +255,10 @@
     .badge {
         display: inline-block;
         padding: 0.1rem 0.5rem;
-        background: #2a2a4a;
+        background: #172840;
         border-radius: 3px;
         font-size: 0.75rem;
-        color: #aaa;
+        color: #7a9ab5;
         text-transform: capitalize;
     }
 
@@ -271,29 +271,29 @@
     }
 
     dt {
-        color: #888;
+        color: #7a9ab5;
     }
 
     dd {
         margin: 0;
-        color: #e0e0e0;
+        color: #c5d8e8;
     }
 
     .empty {
-        color: #888;
+        color: #7a9ab5;
         text-align: center;
         margin-top: 3rem;
     }
 
     .error {
-        color: #f87171;
+        color: #a85860;
         margin-bottom: 1rem;
     }
 
     .btn-primary {
         padding: 0.5rem 1.25rem;
-        background: #7eb8f7;
-        color: #0f0f1a;
+        background: #4a82a8;
+        color: #0d1824;
         border: none;
         border-radius: 4px;
         font-size: 0.95rem;
@@ -302,35 +302,35 @@
     }
 
     .btn-primary:hover {
-        background: #9ecbff;
+        background: #5e9ac0;
     }
 
     .btn-outline {
         padding: 0.5rem 1.25rem;
         background: none;
-        border: 1px solid #555;
-        color: #ccc;
+        border: 1px solid #2e5270;
+        color: #a0bcd0;
         border-radius: 4px;
         font-size: 0.95rem;
         cursor: pointer;
     }
 
     .btn-outline:hover {
-        background: #2a2a4a;
+        background: #172840;
     }
 
     .btn-danger {
         padding: 0.5rem 1.25rem;
         background: none;
-        border: 1px solid #7f1d1d;
-        color: #f87171;
+        border: 1px solid #502030;
+        color: #a85860;
         border-radius: 4px;
         font-size: 0.95rem;
         cursor: pointer;
     }
 
     .btn-danger:hover {
-        background: #450a0a;
+        background: #2a1520;
     }
 
     .btn-sm {

@@ -373,10 +373,10 @@
     .badge {
         display: inline-block;
         padding: 0.15rem 0.6rem;
-        background: #2a2a4a;
+        background: #172840;
         border-radius: 3px;
         font-size: 0.75rem;
-        color: #aaa;
+        color: #7a9ab5;
         text-transform: capitalize;
     }
 
@@ -402,19 +402,19 @@
         padding-left: 0.5rem;
         padding-right: 0.5rem;
         font-size: 0.75rem;
-        color: #888;
+        color: #506880;
     }
 
     .nav-btn-group .nav-btn:last-child:hover {
-        color: #7eb8f7;
+        color: #4a82a8;
     }
 
     .nav-btn {
         padding: 0.3rem 0.75rem;
-        background: #1a1a2e;
-        border: 1px solid #444;
+        background: #111f30;
+        border: 1px solid #274560;
         border-radius: 4px;
-        color: #ccc;
+        color: #a0bcd0;
         text-decoration: none;
         font-size: 1rem;
         cursor: pointer;
@@ -422,7 +422,7 @@
     }
 
     .nav-btn:hover {
-        background: #2a2a4a;
+        background: #172840;
     }
 
     .month-picker-backdrop {
@@ -436,8 +436,8 @@
         top: calc(100% + 0.4rem);
         right: 0;
         z-index: 11;
-        background: #1a1a2e;
-        border: 1px solid #444;
+        background: #111f30;
+        border: 1px solid #274560;
         border-radius: 6px;
         padding: 1rem;
         display: flex;
@@ -456,7 +456,7 @@
     .picker-year {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #666;
+        color: #506880;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -471,20 +471,20 @@
         padding: 0.3rem 0.25rem;
         text-align: center;
         font-size: 0.8rem;
-        color: #ccc;
+        color: #a0bcd0;
         text-decoration: none;
         border-radius: 4px;
         border: 1px solid transparent;
     }
 
     .picker-month:hover {
-        background: #2a2a4a;
-        border-color: #444;
+        background: #172840;
+        border-color: #274560;
     }
 
     .picker-month-current {
-        border-color: #7eb8f7;
-        color: #7eb8f7;
+        border-color: #4a82a8;
+        color: #4a82a8;
         font-weight: 600;
     }
 
@@ -504,12 +504,12 @@
 
     .tx-count {
         font-size: 0.85rem;
-        color: #888;
+        color: #7a9ab5;
     }
 
     .card {
-        background: #1a1a2e;
-        border: 1px solid #333;
+        background: #111f30;
+        border: 1px solid #1c3348;
         border-radius: 8px;
         padding: 1.5rem;
     }
@@ -534,7 +534,7 @@
         flex-direction: column;
         gap: 0.25rem;
         font-size: 0.875rem;
-        color: #aaa;
+        color: #7a9ab5;
     }
 
     .type-row {
@@ -550,7 +550,7 @@
         flex-direction: row;
         align-items: center;
         gap: 0.4rem;
-        color: #ccc;
+        color: #a0bcd0;
         cursor: pointer;
     }
 
@@ -558,7 +558,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        color: #ccc;
+        color: #a0bcd0;
         cursor: pointer;
     }
 
@@ -567,17 +567,17 @@
     input[type='date'],
     select {
         padding: 0.5rem 0.75rem;
-        background: #0f0f1a;
-        border: 1px solid #444;
+        background: #0d1824;
+        border: 1px solid #274560;
         border-radius: 4px;
-        color: #e0e0e0;
+        color: #c5d8e8;
         font-size: 0.95rem;
     }
 
     input:focus,
     select:focus {
         outline: none;
-        border-color: #7eb8f7;
+        border-color: #4a82a8;
     }
 
     .form-actions {
@@ -599,15 +599,15 @@
     th {
         text-align: left;
         padding: 0.6rem 0.75rem;
-        color: #888;
+        color: #7a9ab5;
         font-weight: 500;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid #1c3348;
         white-space: nowrap;
     }
 
     td {
         padding: 0.6rem 0.75rem;
-        border-bottom: 1px solid #222;
+        border-bottom: 1px solid #162535;
         vertical-align: middle;
     }
 
@@ -620,12 +620,12 @@
     }
 
     .data-row:hover td {
-        background: #1a1a2e;
+        background: #111f30;
     }
 
     .editing-row td {
-        background: #12122a;
-        border-bottom: 1px solid #444;
+        background: #0a1520;
+        border-bottom: 1px solid #274560;
         padding: 0;
     }
 
@@ -665,21 +665,21 @@
     }
 
     .muted {
-        color: #666;
+        color: #506880;
     }
 
     .recurring-badge {
         font-size: 0.75rem;
-        color: #7eb8f7;
+        color: #4a82a8;
         margin-left: 0.3rem;
     }
 
     .pos {
-        color: #4ade80;
+        color: #3a9065;
     }
 
     .neg {
-        color: #f87171;
+        color: #a85860;
     }
 
     .amount {
@@ -692,20 +692,20 @@
     }
 
     .empty {
-        color: #888;
+        color: #7a9ab5;
         text-align: center;
         margin-top: 3rem;
     }
 
     .error {
-        color: #f87171;
+        color: #a85860;
         margin-bottom: 1rem;
     }
 
     .btn-primary {
         padding: 0.5rem 1.25rem;
-        background: #7eb8f7;
-        color: #0f0f1a;
+        background: #4a82a8;
+        color: #0d1824;
         border: none;
         border-radius: 4px;
         font-size: 0.95rem;
@@ -714,14 +714,14 @@
     }
 
     .btn-primary:hover {
-        background: #9ecbff;
+        background: #5e9ac0;
     }
 
     .btn-save-plus {
         padding: 0.5rem 1.25rem;
-        background: #4a7a5a;
-        color: #d4f0dd;
-        border: 1px solid #5a9a6a;
+        background: #1e4838;
+        color: #88c0a0;
+        border: 1px solid #2e6050;
         border-radius: 4px;
         font-size: 0.95rem;
         font-weight: 600;
@@ -729,21 +729,21 @@
     }
 
     .btn-save-plus:hover {
-        background: #5a9a6a;
+        background: #286050;
     }
 
     .btn-outline {
         padding: 0.5rem 1.25rem;
         background: none;
-        border: 1px solid #555;
-        color: #ccc;
+        border: 1px solid #2e5270;
+        color: #a0bcd0;
         border-radius: 4px;
         font-size: 0.95rem;
         cursor: pointer;
     }
 
     .btn-outline:hover {
-        background: #2a2a4a;
+        background: #172840;
     }
 
     .btn-sm {
@@ -754,7 +754,7 @@
     .btn-icon {
         background: none;
         border: none;
-        color: #666;
+        color: #506880;
         cursor: pointer;
         padding: 0.2rem 0.4rem;
         font-size: 0.85rem;
@@ -762,13 +762,13 @@
     }
 
     .btn-icon:hover {
-        color: #f87171;
-        background: #450a0a;
+        color: #a85860;
+        background: #2a1520;
     }
 
     .btn-icon-warn:hover {
-        color: #fb923c;
-        background: #431407;
+        color: #b07840;
+        background: #28180a;
     }
 
     .delete-group {

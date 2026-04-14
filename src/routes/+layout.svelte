@@ -27,13 +27,13 @@
         align-items: center;
         gap: 1rem;
         padding: 0.75rem 1.5rem;
-        background: #1a1a2e;
-        color: #eee;
-        border-bottom: 1px solid #333;
+        background: #111f30;
+        color: #c5d8e8;
+        border-bottom: 1px solid #1c3348;
     }
 
     nav a {
-        color: #7eb8f7;
+        color: #4a82a8;
         text-decoration: none;
         font-weight: 500;
     }
@@ -45,13 +45,13 @@
     .user {
         margin-left: auto;
         font-size: 0.875rem;
-        color: #aaa;
+        color: #7a9ab5;
     }
 
     nav button {
         background: none;
-        border: 1px solid #555;
-        color: #ccc;
+        border: 1px solid #2e5270;
+        color: #a0bcd0;
         padding: 0.25rem 0.75rem;
         border-radius: 4px;
         cursor: pointer;
@@ -59,14 +59,14 @@
     }
 
     nav button:hover {
-        background: #333;
+        background: #1c3348;
     }
 
     :global(body) {
         margin: 0;
         font-family: system-ui, sans-serif;
-        background: #0f0f1a;
-        color: #e0e0e0;
+        background: #0d1824;
+        color: #c5d8e8;
     }
 
     :global(*, *::before, *::after) {
