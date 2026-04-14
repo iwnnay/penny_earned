@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
     import { formatCurrency, formatDate } from '$lib/shared/formatters.js';
     import DatePicker from '$lib/components/DatePicker.svelte';
+    import CategoryInput from '$lib/components/CategoryInput.svelte';
 
     /** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
     let { data, form } = $props();
@@ -166,6 +167,14 @@
                         Date
                         <DatePicker name="date" value={defaultNewDate} required />
                     </label>
+                    <label class="full-width">
+                        Categories
+                        <CategoryInput 
+                            mainCategories={data.mainCategories} 
+                            subcategories={data.subcategories} 
+                            value={['Misc']}
+                        />
+                    </label>
                     <label class="full-width type-row">
                         <span>Type</span>
                         <div class="radio-group">
@@ -213,6 +222,7 @@
                     <tr>
                         <th class="col-order">#</th>
                         <th>Date</th>
+                        <th>Category</th>
                         <th>Name</th>
                         <th class="col-right">Amount</th>
                         <th class="col-right">Balance</th>
@@ -221,23 +231,35 @@
                 </thead>
                 <tbody>
                     {#each data.transactions as tx (tx.transaction_id)}
+                        {@const cats = data.transactionCategories[tx.transaction_id]}
+                        {@const mainCat = cats.categories.find(c => c.is_main)}
                         {#if editingId === tx.transaction_id}
                             <tr class="editing-row">
                                 <td colspan="6" class="edit-cell">
                                     <form method="POST" action="?/update" use:enhance class="inline-edit-form">
                                         <input type="hidden" name="transaction_id" value={tx.transaction_id} />
                                         <div class="inline-edit-fields">
-                                            <label>
-                                                Name
-                                                <input type="text" name="name" value={tx.name} required />
-                                            </label>
-                                            <label>
-                                                Amount
-                                                <input type="number" name="amount" step="0.01" min="0.01" value={tx.amount} required />
-                                            </label>
-                                            <label>
-                                                Date
-                                                <DatePicker name="date" value={tx.date} required />
+                                            <div class="field-row">
+                                                <label>
+                                                    Name
+                                                    <input type="text" name="name" value={tx.name} required />
+                                                </label>
+                                                <label>
+                                                    Amount
+                                                    <input type="number" name="amount" step="0.01" min="0.01" value={tx.amount} required />
+                                                </label>
+                                                <label>
+                                                    Date
+                                                    <DatePicker name="date" value={tx.date} required />
+                                                </label>
+                                            </div>
+                                            <label class="full-width">
+                                                Categories
+                                                <CategoryInput 
+                                                    mainCategories={data.mainCategories} 
+                                                    subcategories={data.subcategories} 
+                                                    value={cats.categories.map(c => c.name)}
+                                                />
                                             </label>
                                             <label class="type-row">
                                                 <span>Type</span>
@@ -271,6 +293,26 @@
                             <tr class="data-row" onclick={() => startEdit(tx.transaction_id)}>
                                 <td class="col-order muted">{tx.order}</td>
                                 <td>{formatDate(tx.date)}</td>
+                                <td>
+                                    {#if mainCat}
+                                        <div class="category-cell">
+                                            <span class="main-cat-name">
+                                                {mainCat.name}
+                                                {#if cats.categories.length > 1}+{/if}
+                                            </span>
+                                            {#if cats.categories.length > 1}
+                                                <div class="category-popup">
+                                                    <strong>Categories:</strong>
+                                                    <ul>
+                                                        {#each cats.categories as c}
+                                                            <li class={c.is_main ? 'popup-main' : ''}>{c.name}</li>
+                                                        {/each}
+                                                    </ul>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    {/if}
+                                </td>
                                 <td>
                                     {tx.name}
                                     {#if tx.series}
@@ -587,13 +629,15 @@
     }
 
     .table-wrap {
-        overflow-x: auto;
+        /* No overflow here, otherwise absolute popups in the table are clipped */
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.9rem;
+        /* Add relative positioning to table if needed, 
+           but the popup is relative to .category-cell */
     }
 
     th {
@@ -644,10 +688,68 @@
     }
 
     .inline-edit-fields {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 2fr;
+        display: flex;
+        flex-direction: column;
         gap: 0.75rem;
-        align-items: start;
+    }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .category-cell {
+        position: relative;
+        display: inline-block;
+    }
+
+    .main-cat-name {
+        cursor: help;
+    }
+
+    .category-cell:hover .category-popup {
+        display: block;
+    }
+
+    .category-popup {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        z-index: 1001; /* Higher z-index to stay above headers */
+        background: var(--bg-surface);
+        border: 1px solid var(--border-input);
+        border-radius: 4px;
+        padding: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        min-width: 150px;
+        pointer-events: none;
+    }
+
+    .category-popup strong {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+    }
+
+    .category-popup ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .category-popup li {
+        font-size: 0.85rem;
+        color: var(--text-main);
+        padding: 0.1rem 0;
+    }
+
+    .popup-main {
+        font-weight: bold;
+        color: var(--primary-alt);
     }
 
     .col-order {

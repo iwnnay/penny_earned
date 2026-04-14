@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from './db/client.js';
+import { setTransactionCategories, getMiscCategoryId } from './categories.js';
 
 /** Returns the YYYY-MM string 24 months from today — the generation horizon. */
 export function getNeededHorizon() {
@@ -199,6 +200,7 @@ function getOrderOffset(accountId, startDate) {
  *   amount: number,
  *   debit: boolean,
  *   date: string,
+ *   categories?: number[],
  *   series?: string | null,
  *   recurring_frequency?: string | null
  * }} data
@@ -220,10 +222,20 @@ export function createTransaction(data) {
         data.recurring_frequency ?? null
     );
 
+    const transactionId = result.lastInsertRowid;
+    let categoryIds = data.categories;
+    if (!categoryIds || categoryIds.length === 0) {
+        const miscId = getMiscCategoryId();
+        if (miscId) categoryIds = [miscId];
+    }
+    if (categoryIds && categoryIds.length > 0) {
+        setTransactionCategories(transactionId, categoryIds);
+    }
+
     const [year, month] = data.date.split('-').map(Number);
     recalculateFromMonth(data.account_id, year, month);
 
-    return result.lastInsertRowid;
+    return transactionId;
 }
 
 /**
@@ -234,6 +246,7 @@ export function createTransaction(data) {
  *   amount: number,
  *   debit: boolean,
  *   date: string,
+ *   categories?: number[],
  *   recurring_frequency: string
  * }} data
  */
@@ -250,8 +263,17 @@ export function createRecurringSeries(data) {
          VALUES (?, 0, ?, ?, ?, ?, ?, ?, 0)`
     );
     const insertAll = db.transaction(() => {
+        let categoryIds = data.categories;
+        if (!categoryIds || categoryIds.length === 0) {
+            const miscId = getMiscCategoryId();
+            if (miscId) categoryIds = [miscId];
+        }
         for (const d of dates) {
-            stmt.run(data.account_id, data.name, data.amount, data.debit ? 1 : 0, d, seriesId, data.recurring_frequency);
+            const result = stmt.run(data.account_id, data.name, data.amount, data.debit ? 1 : 0, d, seriesId, data.recurring_frequency);
+            const transactionId = result.lastInsertRowid;
+            if (categoryIds && categoryIds.length > 0) {
+                setTransactionCategories(transactionId, categoryIds);
+            }
         }
     });
     insertAll();
@@ -266,21 +288,34 @@ export function createRecurringSeries(data) {
 /**
  * Updates a single transaction and recalculates from the earliest affected month.
  * @param {number} transactionId
- * @param {{ name: string, amount: number, debit: boolean, date: string }} data
+ * @param {{ name: string, amount: number, debit: boolean, date: string, categories?: number[] }} data
  */
 export function updateTransaction(transactionId, data) {
     const db = getDb();
-    const old = db.prepare('SELECT account_id, date FROM transactions WHERE transaction_id = ?').get(transactionId);
+    const old = db.prepare('SELECT account_id, date, series FROM transactions WHERE transaction_id = ?').get(transactionId);
     if (!old) {
         return;
     }
-    db.prepare('UPDATE transactions SET name = ?, amount = ?, debit = ?, date = ? WHERE transaction_id = ?').run(
-        data.name,
-        data.amount,
-        data.debit ? 1 : 0,
-        data.date,
-        transactionId
-    );
+    db.transaction(() => {
+        db.prepare('UPDATE transactions SET name = ?, amount = ?, debit = ?, date = ? WHERE transaction_id = ?').run(
+            data.name,
+            data.amount,
+            data.debit ? 1 : 0,
+            data.date,
+            transactionId
+        );
+        if (data.categories) {
+            if (old.series) {
+                // If it's in a series, update categories for EVERY transaction in that series
+                const seriesTxIds = db.prepare('SELECT transaction_id FROM transactions WHERE series = ? AND account_id = ?').all(old.series, old.account_id);
+                for (const row of seriesTxIds) {
+                    setTransactionCategories(row.transaction_id, data.categories);
+                }
+            } else {
+                setTransactionCategories(transactionId, data.categories);
+            }
+        }
+    })();
     // Recalculate from whichever month is earlier — old date or new date
     const earliest = old.date < data.date ? old.date : data.date;
     const [year, month] = earliest.split('-').map(Number);
@@ -292,7 +327,7 @@ export function updateTransaction(transactionId, data) {
  * (same series UUID, date >= this transaction's original date).
  * Future occurrences keep their own dates; only name, amount, and debit are propagated.
  * @param {number} transactionId
- * @param {{ name: string, amount: number, debit: boolean, date: string }} data
+ * @param {{ name: string, amount: number, debit: boolean, date: string, categories?: number[] }} data
  */
 export function updateTransactionAndFuture(transactionId, data) {
     const db = getDb();
@@ -308,6 +343,18 @@ export function updateTransactionAndFuture(transactionId, data) {
 
     db.transaction(() => {
         updateThis.run(data.name, data.amount, data.debit ? 1 : 0, data.date, transactionId);
+        if (data.categories) {
+            if (old.series) {
+                // If it's in a series, update categories for EVERY transaction in that series
+                // regardless of whether we are only updating names/amounts for future ones.
+                const allSeriesTxIds = db.prepare('SELECT transaction_id FROM transactions WHERE series = ? AND account_id = ?').all(old.series, old.account_id);
+                for (const row of allSeriesTxIds) {
+                    setTransactionCategories(row.transaction_id, data.categories);
+                }
+            } else {
+                setTransactionCategories(transactionId, data.categories);
+            }
+        }
         if (old.series) {
             updateFuture.run(data.name, data.amount, data.debit ? 1 : 0, old.series, old.account_id, old.date, transactionId);
         }

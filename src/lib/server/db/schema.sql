@@ -42,3 +42,31 @@ CREATE TABLE IF NOT EXISTS transactions (
 CREATE INDEX IF NOT EXISTS idx_transactions_account_date ON transactions(account_id, date);
 CREATE INDEX IF NOT EXISTS idx_transactions_series ON transactions(series) WHERE series IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires);
+    
+CREATE TABLE IF NOT EXISTS categories (
+    category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id  INTEGER REFERENCES accounts(account_id) ON DELETE CASCADE,
+    name        TEXT    NOT NULL,
+    UNIQUE(account_id, name)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_global_name ON categories(name) WHERE account_id IS NULL;
+
+CREATE TABLE IF NOT EXISTS transaction_categories (
+    transaction_id INTEGER NOT NULL REFERENCES transactions(transaction_id) ON DELETE CASCADE,
+    category_id    INTEGER NOT NULL REFERENCES categories(category_id) ON DELETE CASCADE,
+    PRIMARY KEY (transaction_id, category_id)
+);
+
+INSERT OR IGNORE INTO categories (name, account_id) VALUES
+    ('Food', NULL),
+    ('Entertainment', NULL),
+    ('Bills', NULL),
+    ('Debt', NULL),
+    ('Work', NULL),
+    ('Business', NULL),
+    ('Investment', NULL),
+    ('Petcare', NULL),
+    ('Transportation', NULL),
+    ('Misc', NULL),
+    ('Health', NULL);

@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { getAccount } from '$lib/server/accounts.js';
 import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries, getNeededHorizon, ensureHorizonForAccount } from '$lib/server/transactions.js';
+import { getMainCategories, getSubcategories, ensureCategory, getCategoriesForTransactions } from '$lib/server/categories.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals, params, url, cookies }) {
@@ -33,8 +34,20 @@ export function load({ locals, params, url, cookies }) {
     }
 
     const transactions = getTransactionsForMonth(accountId, year, month);
+    const mainCategories = getMainCategories();
+    const subcategories = getSubcategories(accountId);
+    const transactionCategories = getCategoriesForTransactions(transactions.map((t) => t.transaction_id));
 
-    return { account, transactions, year, month, horizon: neededHorizon };
+    return { 
+        account, 
+        transactions, 
+        year, 
+        month, 
+        horizon: neededHorizon,
+        mainCategories,
+        subcategories,
+        transactionCategories
+    };
 }
 
 /** @type {import('./$types').Actions} */
@@ -57,14 +70,39 @@ export const actions = {
         const is_recurring = form.get('is_recurring') === 'true';
         const recurring_frequency = String(form.get('recurring_frequency') ?? '') || null;
 
-        if (!name || !date || isNaN(amount) || amount <= 0) {
-            return fail(400, { error: 'Name, valid amount, and date are required.' });
+        const categoryNames = form.getAll('categories').map(String).filter(Boolean);
+        if (categoryNames.length === 0) {
+            categoryNames.push('Misc');
+        }
+
+        const allMainCategories = getMainCategories();
+        const categoryIds = [];
+
+        for (const name of categoryNames) {
+            const existingMain = allMainCategories.find((c) => c.name.toLowerCase() === name.toLowerCase());
+            if (existingMain) {
+                categoryIds.push(existingMain.category_id);
+            } else {
+                // If not a main category, ensure it exists as an account-specific category
+                categoryIds.push(ensureCategory(name, accountId));
+            }
+        }
+
+        const hasMain = categoryIds.some(id => allMainCategories.some(m => m.category_id === id));
+        if (!hasMain) {
+            return fail(400, { error: 'At least one main category is required.' });
         }
 
         if (is_recurring && recurring_frequency) {
-            createRecurringSeries({ account_id: accountId, name, amount, debit, date, recurring_frequency });
+            createRecurringSeries({ 
+                account_id: accountId, name, amount, debit, date, recurring_frequency,
+                categories: categoryIds 
+            });
         } else {
-            createTransaction({ account_id: accountId, name, amount, debit, date });
+            createTransaction({ 
+                account_id: accountId, name, amount, debit, date,
+                categories: categoryIds 
+            });
         }
 
         return { success: true };
@@ -88,14 +126,43 @@ export const actions = {
         const date = String(form.get('date') ?? '');
         const update_future = form.get('update_future') === 'true';
 
+        const categoryNames = form.getAll('categories').map(String).filter(Boolean);
+        if (categoryNames.length === 0) {
+            categoryNames.push('Misc');
+        }
+        
+        const allMainCategories = getMainCategories();
+        const categoryIds = [];
+
+        for (const name of categoryNames) {
+            const existingMain = allMainCategories.find((c) => c.name.toLowerCase() === name.toLowerCase());
+            if (existingMain) {
+                categoryIds.push(existingMain.category_id);
+            } else {
+                // If not a main category, ensure it exists as an account-specific category
+                categoryIds.push(ensureCategory(name, accountId));
+            }
+        }
+        
         if (!transaction_id || !name || !date || isNaN(amount) || amount <= 0) {
             return fail(400, { error: 'Name, valid amount, and date are required.' });
         }
+        
+        const hasMain = categoryIds.some(id => allMainCategories.some(m => m.category_id === id));
+        if (!hasMain) {
+            return fail(400, { error: 'At least one main category is required.' });
+        }
 
         if (update_future) {
-            updateTransactionAndFuture(transaction_id, { name, amount, debit, date });
+            updateTransactionAndFuture(transaction_id, { 
+                name, amount, debit, date, 
+                categories: categoryIds 
+            });
         } else {
-            updateTransaction(transaction_id, { name, amount, debit, date });
+            updateTransaction(transaction_id, { 
+                name, amount, debit, date,
+                categories: categoryIds 
+            });
         }
 
         return { success: true };
