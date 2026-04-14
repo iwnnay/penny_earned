@@ -1,0 +1,253 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Penny Earned API",
+        "version": "1.0.0",
+        "description": "Personal banking application API"
+    },
+    "servers": [{ "url": "/api" }],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "summary": "Login",
+                "tags": ["Auth"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": { "type": "string", "format": "email" },
+                                    "password": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/User" }
+                            }
+                        }
+                    },
+                    "401": { "description": "Invalid credentials" }
+                }
+            }
+        },
+        "/accounts": {
+            "get": {
+                "summary": "List accounts",
+                "tags": ["Accounts"],
+                "responses": {
+                    "200": {
+                        "description": "List of accounts",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Account" } }
+                            }
+                        }
+                    },
+                    "401": { "description": "Unauthorized" }
+                }
+            },
+            "post": {
+                "summary": "Create account",
+                "tags": ["Accounts"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/AccountInput" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Account created",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "object", "properties": { "account_id": { "type": "integer" } } }
+                            }
+                        }
+                    },
+                    "400": { "description": "Validation error" },
+                    "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+        "/accounts/{account_id}": {
+            "parameters": [{ "name": "account_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+            "get": {
+                "summary": "Get account",
+                "tags": ["Accounts"],
+                "responses": {
+                    "200": {
+                        "description": "Account",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Account" } } }
+                    },
+                    "404": { "description": "Not found" }
+                }
+            },
+            "put": {
+                "summary": "Update account",
+                "tags": ["Accounts"],
+                "requestBody": {
+                    "required": true,
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AccountInput" } } }
+                },
+                "responses": {
+                    "200": { "description": "Updated" },
+                    "404": { "description": "Not found" }
+                }
+            },
+            "delete": {
+                "summary": "Delete account",
+                "tags": ["Accounts"],
+                "responses": {
+                    "200": { "description": "Deleted" },
+                    "404": { "description": "Not found" }
+                }
+            }
+        },
+        "/transactions": {
+            "get": {
+                "summary": "List transactions for a month",
+                "tags": ["Transactions"],
+                "parameters": [
+                    { "name": "account_id", "in": "query", "required": true, "schema": { "type": "integer" } },
+                    { "name": "year", "in": "query", "schema": { "type": "integer" } },
+                    { "name": "month", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 12 } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transactions",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Transaction" } }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create transaction",
+                "tags": ["Transactions"],
+                "requestBody": {
+                    "required": true,
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TransactionInput" } } }
+                },
+                "responses": {
+                    "201": { "description": "Created" },
+                    "400": { "description": "Validation error" }
+                }
+            }
+        },
+        "/transactions/{transaction_id}": {
+            "parameters": [{ "name": "transaction_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+            "get": {
+                "summary": "Get transaction",
+                "tags": ["Transactions"],
+                "responses": {
+                    "200": {
+                        "description": "Transaction",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Transaction" } } }
+                    },
+                    "404": { "description": "Not found" }
+                }
+            },
+            "delete": {
+                "summary": "Delete transaction",
+                "tags": ["Transactions"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "delete_series": { "type": "boolean", "description": "If true, delete entire recurring series" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Deleted" },
+                    "404": { "description": "Not found" }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "user_id": { "type": "integer" },
+                    "email": { "type": "string", "format": "email" }
+                }
+            },
+            "Account": {
+                "type": "object",
+                "properties": {
+                    "account_id": { "type": "integer" },
+                    "user_id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "type": { "type": "string", "enum": ["checking", "savings"] },
+                    "interest_rate": { "type": "number" },
+                    "starting_amount": { "type": "number" },
+                    "starting_date": { "type": "string", "format": "date" }
+                }
+            },
+            "AccountInput": {
+                "type": "object",
+                "required": ["name", "type", "starting_date"],
+                "properties": {
+                    "name": { "type": "string" },
+                    "type": { "type": "string", "enum": ["checking", "savings"] },
+                    "interest_rate": { "type": "number", "default": 0 },
+                    "starting_amount": { "type": "number", "default": 0 },
+                    "starting_date": { "type": "string", "format": "date" }
+                }
+            },
+            "Transaction": {
+                "type": "object",
+                "properties": {
+                    "transaction_id": { "type": "integer" },
+                    "account_id": { "type": "integer" },
+                    "order": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "amount": { "type": "number" },
+                    "debit": { "type": "integer", "enum": [0, 1] },
+                    "date": { "type": "string", "format": "date" },
+                    "series": { "type": "string", "nullable": true },
+                    "recurring_frequency": {
+                        "type": "string",
+                        "nullable": true,
+                        "enum": ["daily", "weekly", "bi-weekly", "monthly", "1st-and-15th", "quarterly"]
+                    },
+                    "total": { "type": "number" }
+                }
+            },
+            "TransactionInput": {
+                "type": "object",
+                "required": ["account_id", "name", "amount", "date"],
+                "properties": {
+                    "account_id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "amount": { "type": "number" },
+                    "debit": { "type": "boolean", "default": true },
+                    "date": { "type": "string", "format": "date" },
+                    "recurring_frequency": {
+                        "type": "string",
+                        "enum": ["daily", "weekly", "bi-weekly", "monthly", "1st-and-15th", "quarterly"]
+                    }
+                }
+            }
+        }
+    }
+}
