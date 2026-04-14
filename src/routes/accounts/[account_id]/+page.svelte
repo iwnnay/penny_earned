@@ -1,12 +1,22 @@
 <script>
     import { enhance } from '$app/forms';
     import { formatCurrency, formatDate } from '$lib/shared/formatters.js';
+    import DatePicker from '$lib/components/DatePicker.svelte';
 
     /** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
     let { data, form } = $props();
 
     const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const FREQUENCIES = ['daily', 'weekly', 'bi-weekly', 'monthly', '1st-and-15th', 'quarterly'];
+
+    // Default date for new transactions: today's day-of-month clamped to the last
+    // valid day of the viewed month. $derived so it updates when navigating months.
+    const defaultNewDate = $derived((() => {
+        const todayDay = new Date().getDate();
+        const lastDay = new Date(data.year, data.month, 0).getDate();
+        const day = String(Math.min(todayDay, lastDay)).padStart(2, '0');
+        return `${data.year}-${String(data.month).padStart(2, '0')}-${day}`;
+    })());
 
     let showAddForm = $state(false);
     let isRecurring = $state(false);
@@ -90,7 +100,7 @@
                     </label>
                     <label>
                         Date
-                        <input type="date" name="date" required value={`${data.year}-${String(data.month).padStart(2, '0')}-01`} />
+                        <DatePicker name="date" value={defaultNewDate} required />
                     </label>
                     <label class="full-width type-row">
                         <span>Type</span>
@@ -163,7 +173,7 @@
                                             </label>
                                             <label>
                                                 Date
-                                                <input type="date" name="date" value={tx.date} required />
+                                                <DatePicker name="date" value={tx.date} required />
                                             </label>
                                             <label class="type-row">
                                                 <span>Type</span>

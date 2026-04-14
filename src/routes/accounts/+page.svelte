@@ -1,6 +1,7 @@
 <script>
     import { enhance } from '$app/forms';
     import { formatCurrency, formatDate, formatPercent } from '$lib/shared/formatters.js';
+    import DatePicker from '$lib/components/DatePicker.svelte';
 
     /** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
     let { data, form } = $props();
@@ -56,7 +57,7 @@
                     </label>
                     <label class="full-width">
                         Starting Date
-                        <input type="date" name="starting_date" required />
+                        <DatePicker name="starting_date" required />
                     </label>
                 </div>
                 <div class="form-actions">
@@ -100,7 +101,7 @@
                                 </label>
                                 <label class="full-width">
                                     Starting Date
-                                    <input type="date" name="starting_date" value={account.starting_date} required />
+                                    <DatePicker name="starting_date" value={account.starting_date} required />
                                 </label>
                             </div>
                             <div class="form-actions">
