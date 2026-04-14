@@ -21,6 +21,33 @@
     let showAddForm = $state(false);
     let isRecurring = $state(false);
     let editingId = $state(/** @type {number | null} */ (null));
+    let showMonthPicker = $state(false);
+
+    /** YYYY-MM of the currently viewed month */
+    const currentMonthStr = $derived(`${data.year}-${String(data.month).padStart(2, '0')}`);
+
+    /** True when the viewed month is at or past the generation horizon */
+    const isAtHorizon = $derived(currentMonthStr >= data.horizon);
+
+    /**
+     * Future months from today through the horizon, grouped by year.
+     * @type {Array<{ year: number, months: number[] }>}
+     */
+    const monthGroups = $derived((() => {
+        const now = new Date();
+        let y = now.getFullYear();
+        let m = now.getMonth() + 1;
+        const [hy, hm] = data.horizon.split('-').map(Number);
+        /** @type {Record<number, number[]>} */
+        const byYear = {};
+        while (y < hy || (y === hy && m <= hm)) {
+            if (!byYear[y]) { byYear[y] = []; }
+            byYear[y].push(m);
+            m++;
+            if (m > 12) { m = 1; y++; }
+        }
+        return Object.entries(byYear).map(([year, months]) => ({ year: Number(year), months }));
+    })());
 
     $effect(() => {
         if (form?.success) {
@@ -70,10 +97,44 @@
     <div class="month-nav">
         <div class="nav-btn-group">
             <a href={prevMonth()} class="nav-btn">&larr;</a>
-            <a href="?" class="nav-btn nav-btn-today" title="Go to current month">&#x25BE;</a>
+            <a href="?" class="nav-btn nav-btn-caret" title="Go to current month">&#x25BE;</a>
         </div>
+
         <span class="month-label">{MONTHS[data.month - 1]} {data.year}</span>
-        <a href={nextMonth()} class="nav-btn">&rarr;</a>
+
+        {#if !isAtHorizon}
+            <div class="nav-btn-group nav-forward-group">
+                <a href={nextMonth()} class="nav-btn">&rarr;</a>
+                <button
+                    class="nav-btn nav-btn-caret"
+                    onclick={() => (showMonthPicker = !showMonthPicker)}
+                    aria-label="Jump to month"
+                >&#x25B4;</button>
+
+                {#if showMonthPicker}
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="month-picker-backdrop" onclick={() => (showMonthPicker = false)}></div>
+                    <div class="month-picker">
+                        {#each monthGroups as group}
+                            <div class="picker-year-group">
+                                <span class="picker-year">{group.year}</span>
+                                <div class="picker-months">
+                                    {#each group.months as m}
+                                        {@const str = `${group.year}-${String(m).padStart(2, '0')}`}
+                                        <a
+                                            href={`?year=${group.year}&month=${m}`}
+                                            class="picker-month"
+                                            class:picker-month-current={str === currentMonthStr}
+                                            onclick={() => (showMonthPicker = false)}
+                                        >{MONTHS[m - 1].slice(0, 3)}</a>
+                                    {/each}
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+        {/if}
     </div>
 
     {#if form?.error}
@@ -328,6 +389,7 @@
 
     .nav-btn-group {
         display: flex;
+        position: relative;
     }
 
     .nav-btn-group .nav-btn:first-child {
@@ -355,10 +417,75 @@
         color: #ccc;
         text-decoration: none;
         font-size: 1rem;
+        cursor: pointer;
+        font-family: inherit;
     }
 
     .nav-btn:hover {
         background: #2a2a4a;
+    }
+
+    .month-picker-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+    }
+
+    .month-picker {
+        position: absolute;
+        top: calc(100% + 0.4rem);
+        right: 0;
+        z-index: 11;
+        background: #1a1a2e;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-width: 220px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .picker-year-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .picker-year {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .picker-months {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+    }
+
+    .picker-month {
+        padding: 0.3rem 0.25rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #ccc;
+        text-decoration: none;
+        border-radius: 4px;
+        border: 1px solid transparent;
+    }
+
+    .picker-month:hover {
+        background: #2a2a4a;
+        border-color: #444;
+    }
+
+    .picker-month-current {
+        border-color: #7eb8f7;
+        color: #7eb8f7;
+        font-weight: 600;
     }
 
     .month-label {

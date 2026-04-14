@@ -1,6 +1,79 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from './db/client.js';
 
+/** Returns the YYYY-MM string 24 months from today — the generation horizon. */
+export function getNeededHorizon() {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 24);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/**
+ * Finds every recurring series for the account whose last generated occurrence
+ * falls before the needed horizon and extends it, then recalculates.
+ * Series that were intentionally ended (last date well in the past) are skipped
+ * because their last_date will be far behind any active horizon.
+ * @param {number} accountId
+ * @param {string} neededHorizon  YYYY-MM
+ */
+export function ensureHorizonForAccount(accountId, neededHorizon) {
+    const db = getDb();
+    // Use the last day of the horizon month as a generous upper bound.
+    const horizonEnd = new Date(neededHorizon + '-01T00:00:00');
+    horizonEnd.setMonth(horizonEnd.getMonth() + 1);
+    horizonEnd.setDate(horizonEnd.getDate() - 1);
+
+    // Only extend series whose last occurrence is within the past 25 months —
+    // i.e. series that were actively generated and have reached (or nearly reached)
+    // the previous horizon. Series the user ended months ago will have much earlier
+    // last dates and will be skipped.
+    const activeFloor = new Date();
+    activeFloor.setMonth(activeFloor.getMonth() - 1);
+    const activeFloorStr = activeFloor.toISOString().slice(0, 10);
+
+    const seriesList = db
+        .prepare(
+            `SELECT series, recurring_frequency, name, amount, debit, MAX(date) as last_date
+             FROM transactions
+             WHERE account_id = ? AND series IS NOT NULL
+             GROUP BY series
+             HAVING last_date >= ? AND last_date < ?`
+        )
+        .all(accountId, activeFloorStr, neededHorizon + '-01');
+
+    if (seriesList.length === 0) {
+        return;
+    }
+
+    const stmt = db.prepare(
+        `INSERT INTO transactions (account_id, "order", name, amount, debit, date, series, recurring_frequency, total)
+         VALUES (?, 0, ?, ?, ?, ?, ?, ?, 0)`
+    );
+
+    let earliestNewDate = null;
+
+    db.transaction(() => {
+        for (const s of seriesList) {
+            const next = nextOccurrence(new Date(s.last_date + 'T00:00:00'), s.recurring_frequency);
+            if (next > horizonEnd) {
+                continue;
+            }
+            const newDates = expandDates(next.toISOString().slice(0, 10), s.recurring_frequency, horizonEnd);
+            for (const d of newDates) {
+                stmt.run(accountId, s.name, s.amount, s.debit, d, s.series, s.recurring_frequency);
+                if (!earliestNewDate || d < earliestNewDate) {
+                    earliestNewDate = d;
+                }
+            }
+        }
+    })();
+
+    if (earliestNewDate) {
+        const [year, month] = earliestNewDate.split('-').map(Number);
+        recalculateFromMonth(accountId, year, month);
+    }
+}
+
 /**
  * @param {number} accountId
  * @param {number} year

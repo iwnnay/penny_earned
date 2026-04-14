@@ -1,9 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { getAccount } from '$lib/server/accounts.js';
-import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries } from '$lib/server/transactions.js';
+import { getTransactionsForMonth, createTransaction, createRecurringSeries, updateTransaction, updateTransactionAndFuture, deleteTransaction, deleteRecurringSeries, getNeededHorizon, ensureHorizonForAccount } from '$lib/server/transactions.js';
 
 /** @type {import('./$types').PageServerLoad} */
-export function load({ locals, params, url }) {
+export function load({ locals, params, url, cookies }) {
     if (!locals.user) {
         redirect(302, '/login');
     }
@@ -18,9 +18,23 @@ export function load({ locals, params, url }) {
     const year = parseInt(url.searchParams.get('year') ?? String(now.getFullYear()));
     const month = parseInt(url.searchParams.get('month') ?? String(now.getMonth() + 1));
 
+    // Self-heal: extend recurring series to the 24-month horizon whenever the
+    // cookie is behind the needed horizon (advances by one month each month).
+    const neededHorizon = getNeededHorizon();
+    const cookieHorizon = cookies.get('series_horizon') ?? '';
+    if (cookieHorizon < neededHorizon) {
+        ensureHorizonForAccount(accountId, neededHorizon);
+        cookies.set('series_horizon', neededHorizon, {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 * 365 * 3,
+        });
+    }
+
     const transactions = getTransactionsForMonth(accountId, year, month);
 
-    return { account, transactions, year, month };
+    return { account, transactions, year, month, horizon: neededHorizon };
 }
 
 /** @type {import('./$types').Actions} */
