@@ -1,6 +1,8 @@
 <script>
-    /** @type {{ 
-     *    mainCategories: {name: string, account_id: number | null}[], 
+    import { MAX_CATEGORIES_PER_TRANSACTION } from '$lib/shared/constants.js';
+
+    /** @type {{
+     *    mainCategories: {name: string, account_id: number | null}[],
      *    subcategories: {name: string, account_id: number}[],
      *    value?: string[]
      * }} */
@@ -40,8 +42,7 @@
             return;
         }
 
-        // Limit to 4 categories total
-        if (tags.length >= 4) {
+        if (tags.length >= MAX_CATEGORIES_PER_TRANSACTION) {
             return;
         }
 
