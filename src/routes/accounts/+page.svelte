@@ -322,7 +322,7 @@
     .btn-danger {
         padding: 0.5rem 1.25rem;
         background: none;
-        border: 1px solid var(--danger); /* Adjusted from #502030 */
+        border: 1px solid var(--danger);
         color: var(--danger);
         border-radius: 4px;
         font-size: 0.95rem;

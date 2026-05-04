@@ -52,7 +52,7 @@
     nav button {
         background: none;
         border: 1px solid var(--border-button);
-        color: var(--text-main); /* Adjusted from #a0bcd0 to var(--text-main) for consistency, or keep if it's meant to be different */
+        color: var(--text-main);
         padding: 0.25rem 0.75rem;
         border-radius: 4px;
         cursor: pointer;

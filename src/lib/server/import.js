@@ -117,7 +117,7 @@ function assignFingerprints(rows) {
 		const base = makeFingerprint(row.date, row.amount, row.debit, row.description);
 		const ordinal = seen.get(base) ?? 0;
 		seen.set(base, ordinal + 1);
-		return { ...row, fingerprint: ordinal === 0 ? base : `${base}:${ordinal}` };
+		return { ...row, fingerprint: makeFingerprint(row.date, row.amount, row.debit, row.description, ordinal) };
 	});
 }
 

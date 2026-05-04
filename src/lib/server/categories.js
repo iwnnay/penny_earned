@@ -67,9 +67,10 @@ export function setTransactionCategories(transactionId, categoryIds) {
 }
 
 /**
- * Returns categories for a list of transactions.
+ * Returns categories for a list of transactions. Each value in the returned
+ * map includes an `is_main` flag derived as `account_id === null`.
  * @param {number[]} transactionIds
- * @returns {Object<number, {categories: any[]}>}
+ * @returns {Record<number, { categories: Array<{ category_id: number, name: string, account_id: number | null, is_main: boolean }> }>}
  */
 export function getCategoriesForTransactions(transactionIds) {
     if (transactionIds.length === 0) return {};

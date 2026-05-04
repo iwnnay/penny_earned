@@ -31,4 +31,5 @@
  * @property {string | null} series
  * @property {RecurringFrequency | null} recurring_frequency
  * @property {number} total
+ * @property {string | null} import_fingerprint
  */
