@@ -74,10 +74,10 @@ function splitCSVLine(line) {
 	return fields;
 }
 
-/** Converts MM/DD/YYYY → YYYY-MM-DD. Returns null for unrecognised formats. */
+/** Converts M/D/YYYY or MM/DD/YYYY → YYYY-MM-DD. Returns null for unrecognised formats. */
 function parseChaseDate(raw) {
-	const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-	return m ? `${m[3]}-${m[1]}-${m[2]}` : null;
+	const m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+	return m ? `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : null;
 }
 
 /** Collapses internal whitespace and trims a bank description. */

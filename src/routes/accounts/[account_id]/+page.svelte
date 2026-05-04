@@ -165,7 +165,6 @@
 			<table>
 				<thead>
 					<tr>
-						<th class="col-order">#</th>
 						<th>Date</th>
 						<th>Category</th>
 						<th>Name</th>
@@ -228,7 +227,6 @@
 							</tr>
 						{:else}
 							<tr class="data-row" onclick={() => startEdit(tx.transaction_id)}>
-								<td class="col-order muted">{tx.order}</td>
 								<td>{formatDate(tx.date)}</td>
 								<td>
 									{#if mainCat}

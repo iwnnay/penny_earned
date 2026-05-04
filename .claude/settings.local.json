@@ -3,7 +3,8 @@
     "allow": [
       "Bash(Get-ChildItem -Force)",
       "Bash(Select-Object Name)",
-      "Bash(dir /s *)"
+      "Bash(dir /s *)",
+      "Bash(node *)"
     ]
   }
 }
