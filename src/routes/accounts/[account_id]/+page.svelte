@@ -5,6 +5,7 @@
 	import DatePicker from '$lib/components/DatePicker.svelte';
 	import CategoryInput from '$lib/components/CategoryInput.svelte';
 	import PieChart from '$lib/components/PieChart.svelte';
+	import BarChart from '$lib/components/BarChart.svelte';
 	import MonthNav from '$lib/components/MonthNav.svelte';
 	import BalanceExtremes from '$lib/components/BalanceExtremes.svelte';
 	import ImportModal from '$lib/components/ImportModal.svelte';
@@ -51,6 +52,13 @@
 	);
 
 	const breakdownTotal = $derived(categoryBreakdown.reduce((s, seg) => s + seg.amount, 0));
+
+	const totalIncome = $derived(
+		data.transactions.filter((tx) => tx.debit).reduce((s, tx) => s + tx.amount, 0)
+	);
+	const totalExpenses = $derived(
+		data.transactions.filter((tx) => !tx.debit).reduce((s, tx) => s + tx.amount, 0)
+	);
 
 	$effect(() => {
 		if (form?.success) {
@@ -323,6 +331,11 @@
 	<section class="card breakdown-card">
 		<h2>Expense Breakdown</h2>
 		<PieChart segments={categoryBreakdown} total={breakdownTotal} />
+	</section>
+
+	<section class="card breakdown-card">
+		<h2>Income vs Expenses</h2>
+		<BarChart income={totalIncome} expenses={totalExpenses} />
 	</section>
 </main>
 
