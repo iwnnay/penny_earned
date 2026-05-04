@@ -27,7 +27,12 @@ export function getSession(token) {
 
 /** @param {string} token */
 export function deleteSession(token) {
-    getDb().prepare('DELETE FROM sessions WHERE token = ?').run(token);
+	getDb().prepare('DELETE FROM sessions WHERE token = ?').run(token);
+}
+
+/** @param {number} userId */
+export function deleteAllUserSessions(userId) {
+	getDb().prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
 }
 
 export function pruneExpiredSessions() {

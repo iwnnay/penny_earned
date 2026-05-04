@@ -5,24 +5,29 @@
 
 <div class="container">
 	<h1>Penny Earned</h1>
-	<form method="POST">
-		{#if data.passwordReset}
-			<p class="success">Password reset successfully. Please sign in.</p>
-		{/if}
-		{#if form?.error}
-			<p class="error">{form.error}</p>
-		{/if}
-		<label>
-			Email
-			<input type="email" name="email" required autocomplete="email" />
-		</label>
-		<label>
-			Password
-			<input type="password" name="password" required autocomplete="current-password" />
-		</label>
-		<button type="submit">Sign In</button>
-		<a href="/forgot-password">Forgot password?</a>
-	</form>
+
+	{#if data.invalid}
+		<div class="card">
+			<p class="error-msg">This reset link is invalid or has expired.</p>
+			<a href="/forgot-password">Request a new link</a>
+		</div>
+	{:else}
+		<form method="POST" class="card">
+			<h2>Choose a new password</h2>
+			{#if form?.error}
+				<p class="error">{form.error}</p>
+			{/if}
+			<label>
+				New password
+				<input type="password" name="password" required autocomplete="new-password" minlength="8" />
+			</label>
+			<label>
+				Confirm new password
+				<input type="password" name="confirm" required autocomplete="new-password" minlength="8" />
+			</label>
+			<button type="submit">Reset password</button>
+		</form>
+	{/if}
 </div>
 
 <style>
@@ -41,7 +46,7 @@
 		color: var(--primary);
 	}
 
-	form {
+	.card {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -51,6 +56,12 @@
 		padding: 2rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-main);
+	}
+
+	h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: var(--text-main);
 	}
 
 	label {
@@ -107,8 +118,8 @@
 		font-size: 0.875rem;
 	}
 
-	.success {
-		color: var(--text-main);
+	.error-msg {
+		color: var(--text-muted);
 		margin: 0;
 		font-size: 0.875rem;
 	}

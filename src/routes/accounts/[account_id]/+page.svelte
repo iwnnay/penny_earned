@@ -7,6 +7,7 @@
 	import PieChart from '$lib/components/PieChart.svelte';
 	import MonthNav from '$lib/components/MonthNav.svelte';
 	import BalanceExtremes from '$lib/components/BalanceExtremes.svelte';
+	import ImportModal from '$lib/components/ImportModal.svelte';
 
 	/** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
 	let { data, form } = $props();
@@ -94,6 +95,7 @@
 		>
 			{showAddForm ? 'Cancel' : '+ Add Transaction'}
 		</button>
+		<ImportModal accountId={data.account.account_id} mainCategories={data.mainCategories} />
 	</div>
 
 	{#if showAddForm}

@@ -1,28 +1,33 @@
 <script>
-	/** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
-	let { data, form } = $props();
+	/** @type {{ form: import('./$types').ActionData }} */
+	let { form } = $props();
 </script>
 
 <div class="container">
 	<h1>Penny Earned</h1>
-	<form method="POST">
-		{#if data.passwordReset}
-			<p class="success">Password reset successfully. Please sign in.</p>
-		{/if}
-		{#if form?.error}
-			<p class="error">{form.error}</p>
-		{/if}
-		<label>
-			Email
-			<input type="email" name="email" required autocomplete="email" />
-		</label>
-		<label>
-			Password
-			<input type="password" name="password" required autocomplete="current-password" />
-		</label>
-		<button type="submit">Sign In</button>
-		<a href="/forgot-password">Forgot password?</a>
-	</form>
+
+	{#if form?.sent}
+		<div class="card">
+			<p class="success">
+				If an account with that email exists, a password reset link has been sent. Check your
+				inbox — it expires in 1 hour.
+			</p>
+			<a href="/login">Back to sign in</a>
+		</div>
+	{:else}
+		<form method="POST" class="card">
+			<h2>Reset password</h2>
+			{#if form?.error}
+				<p class="error">{form.error}</p>
+			{/if}
+			<label>
+				Email
+				<input type="email" name="email" required autocomplete="email" />
+			</label>
+			<button type="submit">Send reset link</button>
+			<a href="/login">Back to sign in</a>
+		</form>
+	{/if}
 </div>
 
 <style>
@@ -41,7 +46,7 @@
 		color: var(--primary);
 	}
 
-	form {
+	.card {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -51,6 +56,12 @@
 		padding: 2rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-main);
+	}
+
+	h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: var(--text-main);
 	}
 
 	label {
@@ -111,5 +122,6 @@
 		color: var(--text-main);
 		margin: 0;
 		font-size: 0.875rem;
+		line-height: 1.5;
 	}
 </style>
