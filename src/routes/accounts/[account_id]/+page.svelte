@@ -51,8 +51,6 @@
 		})()
 	);
 
-	const breakdownTotal = $derived(categoryBreakdown.reduce((s, seg) => s + seg.amount, 0));
-
 	const totalIncome = $derived(
 		data.transactions.filter((tx) => tx.debit).reduce((s, tx) => s + tx.amount, 0)
 	);
@@ -330,7 +328,7 @@
 
 	<section class="card breakdown-card">
 		<h2>Expense Breakdown</h2>
-		<PieChart segments={categoryBreakdown} total={breakdownTotal} />
+		<PieChart segments={categoryBreakdown} total={totalExpenses} />
 	</section>
 
 	<section class="card breakdown-card">

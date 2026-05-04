@@ -28,3 +28,4 @@ plans/
 *.db-shm
 *.db-wal
 .idea/
+.claude/settings.local.json

@@ -17,6 +17,7 @@
     const expensesH = $derived((expenses / max) * CHART_H);
 
     const GAP = W - PAD_SIDE * 2 - BAR_W * 2;
+    const BASELINE_EXTEND = 8;
     const incomeX = PAD_SIDE;
     const expensesX = PAD_SIDE + BAR_W + GAP;
     const baseY = PAD_TOP + CHART_H;
@@ -29,10 +30,8 @@
 {:else}
     <div class="chart-wrap">
         <svg viewBox="0 0 {W} {H}" class="bar-chart" role="img" aria-label="Income vs expenses">
-            <!-- Baseline -->
-            <line x1={PAD_SIDE - 8} y1={baseY} x2={W - PAD_SIDE + 8} y2={baseY} class="baseline" />
+            <line x1={PAD_SIDE - BASELINE_EXTEND} y1={baseY} x2={W - PAD_SIDE + BASELINE_EXTEND} y2={baseY} class="baseline" />
 
-            <!-- Income bar -->
             {#if income > 0}
                 <rect
                     x={incomeX}
@@ -48,7 +47,6 @@
             </text>
             <text x={incomeX + BAR_W / 2} y={baseY + 18} class="bar-label">Income</text>
 
-            <!-- Expenses bar -->
             {#if expenses > 0}
                 <rect
                     x={expensesX}
