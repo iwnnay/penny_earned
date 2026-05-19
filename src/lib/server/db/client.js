@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import { building } from '$app/environment';
+import { registerHealthCheck } from '$lib/server/health.js';
 
 /** @type {import('better-sqlite3').Database | null} */
 let _db = null;
@@ -16,4 +17,8 @@ export function getDb() {
         _db.pragma('foreign_keys = ON');
     }
     return _db;
+}
+
+if (!building) {
+    registerHealthCheck('database', () => getDb().prepare('SELECT 1').get());
 }
