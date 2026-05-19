@@ -1,0 +1,32 @@
+:root {
+    --bg-main: #0d1824;
+    --bg-surface: #111f30;
+    --bg-surface-alt: #172840;
+    --bg-input: #0d1824;
+
+    --text-main: #c5d8e8;
+    --text-muted: #7a9ab5;
+    --text-inverse: #0d1824;
+
+    --primary: #4a82a8;
+    --primary-alt: #7eb8f7;
+    --primary-hover: #5e9ac0;
+    --primary-muted: #4a82a8; /* Same as primary in most places, but used for links */
+
+    --success-bg: #1e4838;
+    --success-text: #3a9065;
+    --success-border: #2e6050;
+    --success-hover: #286050;
+
+    --warning-bg: #28180a;
+    --warning-text: #b07840;
+
+    --danger-bg: #2a1520;
+
+    --border-main: #1c3348;
+    --border-input: #274560;
+    --border-button: #2e5270;
+
+    --danger: #a85860;
+    --danger-hover: #c06d75;
+}
