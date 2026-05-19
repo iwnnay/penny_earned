@@ -1,4 +1,9 @@
 {
 	"version": 1,
-	"kind": "node"
+	"kind": "node",
+	"installCmd": "yarn install",
+	"runCmd": "node build/index.js",
+	"testCmd": "yarn run test",
+	"buildCmd": "yarn run build",
+	"healthPath": "/health"
 }
