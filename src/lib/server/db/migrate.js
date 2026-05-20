@@ -1,16 +1,13 @@
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
 import { getDb } from './client.js';
+import schemaSql from './schema.sql?raw';
 
 let migrated = false;
-const __dir = dirname(fileURLToPath(import.meta.url));
 
 export function migrate() {
 	if (migrated) return;
 	const db = getDb();
 
-	db.exec(readFileSync(join(__dir, 'schema.sql'), 'utf-8'));
+	db.exec(schemaSql);
 
 	db.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY)`);
 	const applied = new Set(db.prepare('SELECT version FROM schema_migrations').pluck().all());
