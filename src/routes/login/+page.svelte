@@ -4,7 +4,10 @@
 </script>
 
 <div class="container">
-	<h1>Penny Earned</h1>
+	<div class="brand">
+		<img src="/icon.svg" alt="" class="logo" />
+		<h1>Penny Earned</h1>
+	</div>
 	<form method="POST">
 		{#if data.passwordReset}
 			<p class="success">Password reset successfully. Please sign in.</p>
@@ -33,6 +36,19 @@
 		justify-content: center;
 		min-height: 100vh;
 		gap: 1.5rem;
+	}
+
+	.brand {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.logo {
+		width: 96px;
+		height: 96px;
+		filter: drop-shadow(0 4px 12px rgba(22, 163, 74, 0.35));
 	}
 
 	h1 {

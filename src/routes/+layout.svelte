@@ -1,14 +1,21 @@
 <script>
     import '../app.css';
     import favicon from '$lib/assets/favicon.svg';
+    import { page } from '$app/state';
 
     /** @type {{ data: import('./$types').LayoutData, children: import('svelte').Snippet }} */
     let { data, children } = $props();
+
+    let showBackgroundLogo = $derived(page.url.pathname !== '/login');
 </script>
 
 <svelte:head>
     <link rel="icon" href={favicon} />
 </svelte:head>
+
+{#if showBackgroundLogo}
+    <img src="/icon.svg" alt="" aria-hidden="true" class="bg-logo" />
+{/if}
 
 {#if data.user}
     <nav>
@@ -72,5 +79,17 @@
 
     :global(*, *::before, *::after) {
         box-sizing: border-box;
+    }
+
+    .bg-logo {
+        position: fixed;
+        top: -50vmax;
+        left: -50vmax;
+        width: 150vmax;
+        height: 150vmax;
+        opacity: 0.04;
+        pointer-events: none;
+        user-select: none;
+        z-index: -1;
     }
 </style>
