@@ -9,19 +9,13 @@ npm run dev          # dev server on port 5400
 npm run build        # production build
 npm run lint         # prettier --check + eslint
 npm run format       # prettier --write
-npm run test         # run all tests once (server + browser)
+npm run test         # run all tests once
 npm run test:unit    # run tests in watch mode
 ```
 
 Run a single test file:
 ```bash
 npx vitest run src/lib/server/transactions.test.js
-```
-
-Run only the server or browser project:
-```bash
-npx vitest run --project server
-npx vitest run --project client
 ```
 
 ## Architecture
@@ -61,12 +55,9 @@ Thin wrappers over the server modules. OpenAPI spec lives in `src/lib/server/ope
 
 ## Testing
 
-Two vitest projects defined in `vite.config.js`:
+Vitest runs in a node environment and includes `*.test.js` / `*.spec.js`. Server tests use in-memory SQLite: tests `vi.mock('$lib/server/db/client.js', () => ({ getDb: () => testDb }))` and create a fresh `freshDb()` in `beforeEach`.
 
-- **`server`** — node environment, includes `*.test.js` / `*.spec.js` (excluding `.svelte.test.js`). Uses in-memory SQLite: tests `vi.mock('$lib/server/db/client.js', () => ({ getDb: () => testDb }))` and create a fresh `freshDb()` in `beforeEach`.
-- **`client`** — browser environment via Playwright/Chromium (headless), includes `*.svelte.test.js`. Uses `vitest-browser-svelte` and `render()` from that package.
-
-The `vi.mock()` pattern in server tests must import the module under test **after** the mock registrations (dynamic `await import(...)` at module level, outside `describe`/`it` blocks).
+The `vi.mock()` pattern must import the module under test **after** the mock registrations (dynamic `await import(...)` at module level, outside `describe`/`it` blocks).
 
 ## Environment
 
