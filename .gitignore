@@ -27,5 +27,6 @@ plans/
 *.db
 *.db-shm
 *.db-wal
+/storage
 .idea/
 .claude/settings.local.json

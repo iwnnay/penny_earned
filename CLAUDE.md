@@ -28,7 +28,7 @@ SvelteKit app using Svelte 5 (runes mode enforced globally via `svelte.config.js
 
 ### Data layer (`src/lib/server/`)
 
-- **`db/client.js`** — singleton `getDb()`. Uses `DATABASE_PATH` env var (default `./penny_earned.db`).
+- **`db/client.js`** — singleton `getDb()`. Uses `DATABASE_PATH` env var (default `./storage/penny_earned.db`; the parent directory is created on first run).
 - **`db/migrate.js`** — applies `schema.sql` then runs numbered migrations from the `MIGRATIONS` array. Safe to call on every startup.
 - **`db/schema.sql`** — baseline schema. Altering this file without a matching migration will not automatically update existing databases.
 - **`transactions.js`** — core financial logic. Every mutation (create/update/delete) ends with a `recalculateFromMonth()` call that recomputes the `order` and `total` columns from the affected month forward. This is the only place running balances are maintained.
@@ -61,6 +61,6 @@ The `vi.mock()` pattern must import the module under test **after** the mock reg
 
 ## Environment
 
-`DATABASE_PATH` — path to the SQLite file. Defaults to `./penny_earned.db` in the project root.
+`DATABASE_PATH` — path to the SQLite file. Defaults to `./storage/penny_earned.db`; the parent directory is created on first run.
 
 Email sending in `src/lib/server/email.js` is a no-op stub in dev (logs to console) and throws in production until an email provider is wired in.
