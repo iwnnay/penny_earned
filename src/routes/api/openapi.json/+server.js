@@ -1,8 +1,4 @@
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
-
-const spec = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../lib/server/openapi.json'), 'utf-8');
+import spec from '$lib/server/openapi.json?raw';
 
 /** @type {import('./$types').RequestHandler} */
 export function GET() {
